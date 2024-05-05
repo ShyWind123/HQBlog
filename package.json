@@ -1,7 +1,7 @@
 {
   "name": "hqblog",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite --port 1001",
@@ -9,8 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "animate.css": "^4.1.1",
     "ant-design-vue": "^4.1.1",
-    "vue": "^3.3.11"
+    "path": "^0.12.7",
+    "pinia": "^2.1.7",
+    "vue": "^3.3.11",
+    "vue-router": "^4.2.5",
+    "vuetify": "^3.5.17"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.5.2",

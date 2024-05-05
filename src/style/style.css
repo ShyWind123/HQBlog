@@ -1,0 +1,60 @@
+:root {
+  --primary-color: #e90000;
+  --light-background: #ffffff;
+  --dark-background: #000000;
+  --dark-background2: #212121;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#app {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 不可选中 */
+.unselectable {
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Override the router-link default style */
+a.router-link-exact-active {
+  color: inherit;
+  /* 保持继承父元素的颜色 */
+  text-decoration: none;
+  /* 去除下划线 */
+}
+
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Microsoft YaHei', sans-serif;
+  /* 如果第一个字体不可用，将使用 sans-serif 作为回退字体 */
+}

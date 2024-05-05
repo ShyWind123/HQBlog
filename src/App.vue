@@ -1,12 +1,12 @@
 <template>
-<Home></Home>
+  <div class="unselectable" draggable="false" oncontextmenu="return false;">
+    <router-view></router-view>
+  </div>
 </template>
 
-<script setup lang='ts'>
-import {ref,reactive} from 'vue'
+<script setup lang='js'>
+import { ref, reactive } from 'vue'
 import Home from './views/Home.vue';
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
