@@ -1,7 +1,7 @@
 <template>
   <div class="blogContainer">
     <div class="allTitleContainer"><span class="allTitle">所有博客</span></div>
-    <div v-for="blog in blogs" class="blogCard">
+    <div v-for="blog in blogs" class="blogCard boxshadow">
       <div class="blogTitleContainer" @click="onBlogTitleClick(blog.id)">
         <span class="blogTitle">{{ blog.title }}</span>
       </div>
@@ -31,13 +31,11 @@
       </div>
     </div>
   </div>
-  <div class="backTop" @click="backTop" ref="backTopRef">
-    Top
-  </div>
+  <BackTop></BackTop>
 </template>
 
 <script setup lang='ts'>
-import { backTopProps } from 'ant-design-vue/es/float-button/interface';
+import BackTop from '../components/BackTop.vue';
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -79,10 +77,6 @@ const blogs = [
     "tags": ["Python", "爬虫", "BeautifulSoup"],
   }
 ]
-
-const backTop = () => {
-  document.documentElement.scrollTop = 0
-}
 
 const onBlogTitleClick = (blogId) => {
   router.push({ name: 'blogDetail', params: { id: blogId } })
@@ -127,7 +121,6 @@ onMounted(() => {
   min-height: 40vh;
   padding: 40px;
   margin: 30px 10px;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -192,27 +185,5 @@ onMounted(() => {
   justify-content: flex-start;
   align-items: center;
   width: 100%;
-}
-
-.backTop {
-  /* 固定定位 */
-  position: fixed;
-  bottom: 5vh;
-  right: 5vw;
-  z-index: 999;
-  /* 回到顶部样式 */
-  width: 35px;
-  height: 35px;
-  background-color: var(--dark-background);
-  /* 字体在元素中水平垂直居中 */
-  line-height: 35px;
-  text-align: center;
-  font-size: 14px;
-  color: var(--light-background);
-  /* 设置圆角 */
-  border-radius: 5px;
-  /* 设置过渡效果 */
-  transition: all linear 0.5s;
-  cursor: pointer;
 }
 </style>
