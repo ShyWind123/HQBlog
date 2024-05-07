@@ -13,14 +13,14 @@
       </div>
 
       <div class="inputContainer">
-        <v-form v-if="loginType === 0" v-model="form" @submit.prevent="onSubmit"
+        <v-form v-if="loginType === 0" v-model="form[0]" @submit.prevent="onSubmit"
           style="display: flex; flex-direction: column;justify-content: center;align-items: center;">
-          <v-text-field v-model="passwordForm.username" :rules="[usernameRule]" variant="outlined" :readonly="loading"
-            label="邮箱/用户名" placeholder="请输入邮箱或用户名" bg-color="#212121" color="#fff" class="inputBox" spellcheck="false"
-            clearable></v-text-field>
-          <v-text-field v-model="passwordForm.password" :rules="[passwordRule]" variant="outlined" :readonly="loading"
-            label="密码" placeholder="请输入密码" bg-color="#212121" color="#fff" class="inputBox"
-            :type="showPassword ? 'text' : 'password'" spellcheck="false">
+          <v-text-field v-model="passwordForm.username" :rules="[emptyRule('邮箱或用户名', passwordForm.username)]"
+            variant="outlined" :readonly="loading" label="邮箱/用户名" placeholder="请输入邮箱或用户名" bg-color="#212121"
+            color="#fff" class="inputBox" spellcheck="false" clearable></v-text-field>
+          <v-text-field v-model="passwordForm.password" :rules="[emptyRule('密码', passwordForm.password)]"
+            variant="outlined" :readonly="loading" label="密码" placeholder="请输入密码" bg-color="#212121" color="#fff"
+            class="inputBox" :type="showPassword ? 'text' : 'password'" spellcheck="false">
             <template v-slot:append-inner>
               <i v-if="showPassword" class='iconfont icon-yanjing_yincang' @click="showPassword = !showPassword"></i>
               <i v-else class='iconfont icon-yanjing_xianshi' @click="showPassword = !showPassword"></i>
@@ -34,10 +34,10 @@
           </button>
         </v-form>
 
-        <v-form v-if="loginType === 1" v-model="form" @submit.prevent="onSubmit">
-          <v-text-field v-model="passwordForm.username" :rules="[usernameRule]" variant="outlined" :readonly="loading"
-            label="邮箱/用户名" placeholder="请输入邮箱或用户名" bg-color="#212121" color="#fff" class="inputBox" spellcheck="false"
-            clearable>
+        <v-form v-if="loginType === 1" v-model="form[1]" @submit.prevent="onSubmit">
+          <v-text-field v-model="emailCodeForm.email" :rules="[emptyRule('邮箱', emailCodeForm.email), emailRule]"
+            variant="outlined" :readonly="loading" label="邮箱" placeholder="请输入邮箱" bg-color="#212121" color="#fff"
+            class="inputBox" spellcheck="false" clearable>
           </v-text-field>
           <span></span>
           <button class="btn">验证邮箱
@@ -48,24 +48,26 @@
           </button>
         </v-form>
 
-        <v-form v-if="loginType === 2" v-model="form" @submit.prevent="onSubmit">
-          <v-text-field v-model="passwordForm.username" :rules="[usernameRule]" variant="outlined" :readonly="loading"
-            label="用户名" placeholder="请输入用户名" bg-color="#212121" color="#fff" class="registerInputBox" spellcheck="false"
-            clearable></v-text-field>
-          <v-text-field v-model="passwordForm.username" :rules="[usernameRule]" variant="outlined" :readonly="loading"
-            label="邮箱" placeholder="请输入邮箱" bg-color="#212121" color="#fff" class="registerInputBox" spellcheck="false"
-            clearable></v-text-field>
-          <v-text-field v-model="passwordForm.password" :rules="[passwordRule]" variant="outlined" :readonly="loading"
+        <v-form v-if="loginType === 2" v-model="form[2]" @submit.prevent="onSubmit">
+          <v-text-field v-model="registerForm.username" :rules="[emptyRule('用户名', registerForm.username)]"
+            variant="outlined" :readonly="loading" label="用户名" placeholder="请输入用户名" bg-color="#212121" color="#fff"
+            class="registerInputBox" spellcheck="false" clearable></v-text-field>
+          <v-text-field v-model="registerForm.email" :rules="[emptyRule('邮箱', registerForm.email), emailRule]"
+            variant="outlined" :readonly="loading" label="邮箱" placeholder="请输入邮箱" bg-color="#212121" color="#fff"
+            class="registerInputBox" spellcheck="false" clearable></v-text-field>
+          <v-text-field v-model="registerForm.password1"
+            :rules="[emptyRule('密码', registerForm.password1), passwordRule]" variant="outlined" :readonly="loading"
             label="密码" placeholder="请输入密码" bg-color="#212121" color="#fff" class="registerInputBox"
-            :type="showPassword ? 'text' : 'password'" spellcheck="false">
+            :type="showPassword ? 'text' : 'password'" spellcheck="false" hint="密码长度至少6位，不能超过16位，必须包含数字和字母">
             <template v-slot:append-inner>
               <i v-if="showPassword" class='iconfont icon-yanjing_yincang' @click="showPassword = !showPassword"></i>
               <i v-else class='iconfont icon-yanjing_xianshi' @click="showPassword = !showPassword"></i>
             </template>
           </v-text-field>
-          <v-text-field v-model="passwordForm.password" :rules="[passwordRule]" variant="outlined" :readonly="loading"
-            label="重复密码" placeholder="请再次输入密码" bg-color="#212121" color="#fff" class="registerInputBox"
-            :type="showPassword ? 'text' : 'password'" spellcheck="false">
+          <v-text-field v-model="registerForm.password2"
+            :rules="[emptyRule('重复密码', registerForm.password2), passwordRule, passwordAgainRule(registerForm.password1, registerForm.password2)]"
+            variant="outlined" :readonly="loading" label="重复密码" placeholder="请再次输入密码" bg-color="#212121" color="#fff"
+            class="registerInputBox" :type="showPassword ? 'text' : 'password'" spellcheck="false">
             <template v-slot:append-inner>
               <i v-if="showPassword" class='iconfont icon-yanjing_yincang' @click="showPassword = !showPassword"></i>
               <i v-else class='iconfont icon-yanjing_xianshi' @click="showPassword = !showPassword"></i>
@@ -83,7 +85,7 @@
     </div>
   </div>
   <v-dialog v-model="showDialog" width="auto">
-    <v-card max-width="400" prepend-icon="mdi-update" text="我们已经发送验证码到你的邮箱，请注意查收。" title="邮箱验证">
+    <v-card max-width="400" prepend-icon="mdi-update" text="我们已经发送验证码到你的邮箱，请注意查收。">
       <v-otp-input></v-otp-input>
     </v-card>
   </v-dialog>
@@ -94,30 +96,36 @@
 import { ref, reactive, onMounted } from 'vue'
 const passwordBtn = ref()
 const phoneCodeBtn = ref()
-const form = ref(false)
+const form = [ref(false), ref(false), ref(false)]
 const isPassword = ref(true)
 const showSnackBar = ref(false)
 const showPassword = ref(false)
 const showDialog = ref(false)
+const loading = ref(false)
 const loginType = ref(0)
 const passwordForm = ref({
   username: null,
   password: null,
 })
-const loading = ref(false)
+const emailCodeForm = ref({
+  email: null,
+  code: null,
+})
+const registerForm = ref({
+  username: null,
+  email: null,
+  password1: null,
+  password2: null,
+  code: null
+})
 
 
-const usernameRule = (v) => {
+const emptyRule = (name, v) => {
   if (v) return true;
-  return '请输入用户名或邮箱'
+  return '请输入' + name
 }
+
 const passwordRule = (v) => {
-  if (v) return true;
-  return '请输入密码'
-}
-
-
-const passwordRule2 = (v) => {
   if (v.length < 6)
     return '密码长度至少6位'
   else if (v.length > 16)
@@ -128,9 +136,19 @@ const passwordRule2 = (v) => {
     return '密码必须包含字母'
 }
 
+const passwordAgainRule = (v1, v2) => {
+  if (v1 !== v2)
+    return '两次密码输入不一致'
+}
+
+const emailRule = (v) => {
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return true;
+  return '请输入正确的邮箱'
+}
+
 const onSubmit = () => {
   console.log(passwordForm)
-  if (!form) return
+  if (!form[loginType.value]) return
   loading.value = true
   setTimeout(() => (loading.value = false), 2000)
   if (loginType.value === 1 || loginType.value === 2) {

@@ -1,24 +1,218 @@
 <template>
-  <v-divider vertical></v-divider>
-  <div id="blogContainer">
+  <div class="blogContainer">
+    <div class="allTitleContainer"><span class="allTitle">所有博客</span></div>
+    <div v-for="blog in blogs" class="blogCard">
+      <div class="blogTitleContainer" @click="onBlogTitleClick(blog.id)">
+        <span class="blogTitle">{{ blog.title }}</span>
+      </div>
+      <div class="blogInfo">
+        <div class="blogSubInfo">
+          <div class="blogAuthor">
+            <i class="iconfont icon-zuozhe"></i>
+            <span>作者: </span>
+            <span>{{ blog.author }}</span>
+          </div>
+          <div class="blogDate">
+            <i class="iconfont icon-rili"></i>
+            <span>发布于: </span>
+            <span>{{ blog.date }}</span>
+          </div>
+        </div>
+      </div>
 
-    <v-text-field variant="outlined" label="密码" placeholder="请输入密码" spellcheck="false" clearable>
+      <div class="blogContent">{{ blog.content }}</div>
 
-    </v-text-field>
-
+      <div class="blogTags">
+        <i class="iconfont icon-biaoqian"></i>
+        <span>标签：</span>
+        <v-chip-group>
+          <v-chip v-for="tag in blog.tags" label>{{ tag }}</v-chip>
+        </v-chip-group>
+      </div>
+    </div>
   </div>
-  <v-divider vertical></v-divider>
+  <div class="backTop" @click="backTop" ref="backTopRef">
+    Top
+  </div>
 </template>
 
 <script setup lang='ts'>
-import { ref, reactive } from 'vue'
+import { backTopProps } from 'ant-design-vue/es/float-button/interface';
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
+
+const backTopRef = ref()
+
+const blogs = [
+  {
+    "id": 1,
+    "title": "如何用Python爬取网页数据",
+    "author": "shywind",
+    "date": "2022-01-10",
+    "content": "Python爬虫是一种自动化的程序，它可以从互联网上抓取数据并将其存储到本地。本文将介绍如何用Python爬取网页数据，并用BeautifulSoup库解析网页内容。",
+    "tags": ["Python", "爬虫", "BeautifulSoup"],
+  },
+  {
+    "id": 2,
+    "title": "如何用Python爬取网页数据",
+    "author": "shywind",
+    "date": "2022-01-11",
+    "content": "Python爬虫是一种自动化的程序，它可以从互联网上抓取数据并将其存储到本地。本文将介绍如何用Python爬取网页数据，并用BeautifulSoup库解析网页内容。",
+    "tags": ["Python", "爬虫", "BeautifulSoup"],
+  },
+  {
+    "id": 3,
+    "title": "如何用Python爬取网页数据",
+    "author": "shywind",
+    "date": "2022-01-11",
+    "content": "Python爬虫是一种自动化的程序，它可以从互联网上抓取数据并将其存储到本地。本文将介绍如何用Python爬取网页数据，并用BeautifulSoup库解析网页内容。",
+    "tags": ["Python", "爬虫", "BeautifulSoup"],
+  },
+  {
+    "id": 4,
+    "title": "如何用Python爬取网页数据",
+    "author": "shywind",
+    "date": "2022-01-11",
+    "content": "Python爬虫是一种自动化的程序，它可以从互联网上抓取数据并将其存储到本地。本文将介绍如何用Python爬取网页数据，并用BeautifulSoup库解析网页内容。",
+    "tags": ["Python", "爬虫", "BeautifulSoup"],
+  }
+]
+
+const backTop = () => {
+  document.documentElement.scrollTop = 0
+}
+
+const onBlogTitleClick = (blogId) => {
+  router.push({ name: 'blogDetail', params: { id: blogId } })
+}
+
+onMounted(() => {
+
+});
 </script>
 
 <style scoped>
-#blogContainer {
+.blogContainer {
   /* background-color: var(--primary-color); */
-  height: 800px;
+  height: auto;
   width: 65vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 20px;
+}
+
+.allTitleContainer {
+  margin-bottom: 80px;
+  width: 100%;
+}
+
+.allTitle {
+  position: absolute;
+  left: 25vw;
+  font-size: 30px;
+  font-weight: bold;
+  border-bottom: 4px solid var(--primary-color);
+}
+
+.blogCard {
+  background-color: var(--dark-background2);
+  color: var(--light-background);
+  width: 50vw;
+  height: auto;
+  border-radius: 5px;
+  min-height: 40vh;
+  padding: 40px;
+  margin: 30px 10px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.blogTitleContainer {
+  width: 100%;
+  display: flex;
+  margin: 0 30px 10px 30px;
+  justify-content: flex-start;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.blogTitleContainer:hover {
+  cursor: pointer;
+  color: var(--primary-color);
+}
+
+.blogInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 12px;
+  width: 100%;
+}
+
+.blogSubInfo {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.blogAuthor {
+  margin: 0 20px;
+}
+
+.blogDate {
+  margin: 0 20px;
+}
+
+
+.blogWatch {
+  margin: 0 20px;
+}
+
+
+.blogLikes {
+  margin: 0 20px;
+}
+
+.blogContent {
+  margin: 25px 0;
+}
+
+.blogTags {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.backTop {
+  /* 固定定位 */
+  position: fixed;
+  bottom: 5vh;
+  right: 5vw;
+  z-index: 999;
+  /* 回到顶部样式 */
+  width: 35px;
+  height: 35px;
+  background-color: var(--dark-background);
+  /* 字体在元素中水平垂直居中 */
+  line-height: 35px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--light-background);
+  /* 设置圆角 */
+  border-radius: 5px;
+  /* 设置过渡效果 */
+  transition: all linear 0.5s;
+  cursor: pointer;
 }
 </style>

@@ -14,3 +14,21 @@ export const useLoginStore = defineStore('login', () => {
     isLogin, login, logout,
   }
 })
+
+export const useSearchStore = defineStore('search', () => {
+  const searchText = ref('')
+  const searchResult = reactive([])
+
+
+  function search(text) {
+    searchText.value = text
+  }
+
+  function setSearchResult(result) {
+    searchResult.value = result
+  }
+
+  return {
+    search, searchText, setSearchResult, searchResult,
+  }
+})

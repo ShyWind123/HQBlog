@@ -37,7 +37,7 @@
             <v-text-field class="search-box-input" ref="searchBoxInput" @blur="hideSearchBox" @keyup.enter="onSearch"
               @input="changeSearchValue" spellcheck='false' variant="outlined" label="搜索" v-if="isSearchBoxShow">
               <template v-slot:append-inner>
-                <div class="top-right-icon-container" style="color: #fff;">
+                <div class="top-right-icon-container" style="color: #fff;cursor: pointer;" @click="onSearch">
                   <i class="iconfont icon-sousuo top-right-icon" style=" font-size: 30px;"></i>
                 </div>
               </template>
@@ -60,13 +60,18 @@
 </template>
 
 <script setup lang='js'>
-import { ref, reactive, nextTick, onMounted } from 'vue'
+import { ref, reactive, nextTick, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useLoginStore } from '@/store/store'
+import { useLoginStore, useSearchStore } from '@/store/store';
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
 
 const loginStore = useLoginStore()
 const { isLogin } = storeToRefs(loginStore)
+
+const searchStore = useSearchStore()
+const { search } = searchStore
 
 const searchBtn = ref(0)
 const searchBox = ref(0)
@@ -75,13 +80,16 @@ const searchBoxInput = ref(0)
 const isSearchBoxShow = ref(false)
 const searchContent = ref('')
 
-let showSnackBar = false
-
 const gotoLinks = [
   {
     name: '首页',
     path: '/HQBlog/home',
-    icon: ' icon-shouye-zhihui'
+    icon: 'icon-shouye-zhihui'
+  },
+  {
+    name: '写博客',
+    path: '/HQBlog/create',
+    icon: 'icon-chuangjian'
   },
   {
     name: '标签',
@@ -135,7 +143,8 @@ const hideSearchBox = () => {
 }
 const onSearch = () => {
   if (searchContent.value != '') {
-    console.log(searchContent);
+    search(searchContent.value)
+    router.push({ name: 'search' })
   }
 }
 const changeSearchValue = (e) => {

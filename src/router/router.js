@@ -7,6 +7,8 @@ import About from '../views/About.vue'
 import Pigeonhole from '../views/Pigeonhole.vue'
 import User from '../views/User.vue'
 import Tags from '../views/Tags.vue'
+import Search from '../views/Search.vue'
+import BlogDetail from '../views/BlogDetail.vue'
 
 
 const routerConfig = {
@@ -50,6 +52,16 @@ const routerConfig = {
           name: 'user',
           path: 'user',
           component: User
+        },
+        {
+          name:'search',
+          path:'search',
+          component: Search
+        },
+        {
+          name:'blogDetail',
+          path:'blogDetail/:id',
+          component: BlogDetail
         }
       ]
     }
