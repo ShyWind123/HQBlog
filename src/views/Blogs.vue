@@ -31,6 +31,9 @@
       </div>
     </div>
   </div>
+  <div class="heatmapContainer boxshadow" ref="heatmapRef">
+    <div id="heatmap" class="heatmap"></div>
+  </div>
   <BackTop></BackTop>
 </template>
 
@@ -38,10 +41,18 @@
 import BackTop from '../components/BackTop.vue';
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import * as echarts from 'echarts';
 
 const router = useRouter()
 
 const backTopRef = ref()
+const heatmapRef = ref()
+
+let calendarData = {
+  startDate: null,
+  endDate: null,
+  monthBlogCnt: 0,
+}
 
 const blogs = [
   {
@@ -78,35 +89,139 @@ const blogs = [
   }
 ]
 
+const option = {
+  title: {
+    top: 20,
+    left: 'center',
+    text: '本月共发表博客' + calendarData.monthBlogCnt + '篇',
+    // textStyle: {
+    //   color: '#fff'
+    // }
+  },
+  tooltip: {
+    trigger: 'item',
+    formatter: function (params) {
+      return `<div>${params.value[0]}</div>
+              <div>发表博客数量: ${params.value[1]}</div>`;
+    },
+    axisPointer: {
+      type: 'shadow'
+    }
+  },
+  visualMap: {
+    show: true,
+    max: 10,
+    min: 0,
+    orient: 'horizontal',
+    bottom: 10,
+    left: 'center',
+    inRange: {
+      color: ['#ffffff', '#008024']
+    },
+    // type: 'piecewise'
+  },
+  calendar: {
+    orient: 'vertical',
+    top: 100,
+    left: 20,
+    right: 20,
+    cellSize: [15, 25],
+    range: null,
+    itemStyle: {
+      borderWidth: 0.5,
+    },
+    yearLabel: { show: false },
+    monthLabel: { show: false },
+    // monthLabel: {
+    //   color: "#fff",
+    // },
+    // dayLabel: {
+    //   color: "#fff"
+    // }
+  },
+  series: {
+    type: 'heatmap',
+    coordinateSystem: 'calendar',
+    data: null,
+  }
+};
+
 const onBlogTitleClick = (blogId) => {
   router.push({ name: 'blogDetail', params: { id: blogId } })
 }
 
-onMounted(() => {
+const initHeatmap = () => {
+  getDate()
+  let chartDom = document.getElementById('heatmap');
+  let myChart = echarts.init(chartDom);
+  option && myChart.setOption(option);
 
+}
+
+const getDate = () => {
+  let currentDate = new Date();
+  let year = currentDate.getFullYear();
+  let month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+  let day = (currentDate.getDate() + 1).toString().padStart(2, '0');
+
+  calendarData.startDate = year + '-' + month + '-01'
+  calendarData.endDate = year + '-' + month + '-' + day
+
+  option.calendar.range = [year + '-' + month];
+  option.series.data = getVirtualData();
+}
+
+const getVirtualData = () => {
+  const start = +echarts.time.parse(calendarData.startDate);
+  const end = +echarts.time.parse(calendarData.endDate);
+  const dayTime = 3600 * 24 * 1000;
+  const data = [];
+  for (let time = start; time < end; time += dayTime) {
+    data.push([
+      echarts.time.format(time, '{yyyy}-{MM}-{dd}', false),
+      Math.floor(Math.random() * 10)
+    ]);
+  }
+  return data;
+}
+
+onMounted(() => {
+  initHeatmap()
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 200) {
+      heatmapRef.value.style.top = '5vh'
+    } else {
+      heatmapRef.value.style.top = '27vh'
+    }
+  });
 });
 </script>
 
 <style scoped>
 .blogContainer {
+  position: relative;
+  left: 0;
   /* background-color: var(--primary-color); */
   height: auto;
-  width: 65vw;
+  width: 70vw;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 50px 20px;
+  padding: 50px 0;
 }
 
 .allTitleContainer {
-  margin-bottom: 80px;
+  margin-bottom: 40px;
   width: 100%;
+  /* height: 3vh; */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .allTitle {
-  position: absolute;
-  left: 25vw;
   font-size: 30px;
   font-weight: bold;
   border-bottom: 4px solid var(--primary-color);
@@ -115,7 +230,7 @@ onMounted(() => {
 .blogCard {
   background-color: var(--dark-background2);
   color: var(--light-background);
-  width: 50vw;
+  width: 45vw;
   height: auto;
   border-radius: 5px;
   min-height: 40vh;
@@ -185,5 +300,20 @@ onMounted(() => {
   justify-content: flex-start;
   align-items: center;
   width: 100%;
+}
+
+.heatmapContainer {
+  height: 35vh;
+  width: 20vw;
+  margin: 20px;
+  position: fixed;
+  top: 27vh;
+  right: 15vw;
+  border-radius: 5px;
+}
+
+.heatmap {
+  width: 100%;
+  height: 100%;
 }
 </style>

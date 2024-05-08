@@ -1,14 +1,38 @@
 <template>
   <div class="userContainer">
     <div class="subContainer1">
-      <div class="userBasicInfoContainer">
-        <div class="userAvatar">
-          <v-avatar image="../../public/default.jpg" size="80"></v-avatar>
-        </div>
-        <div class="userBasicInfo">
-          <div class="userName">{{ userBasicInfo.name }}</div>
+      <div class="userInfoContainer">
+        <div class="userAvatarContainer">
+          <div class="userAvatar">
+            <v-avatar :image="userBasicInfo.avatar.value" size="70" @click="openFilePicker"></v-avatar>
+            <input type="file" id="avatarInput" ref="fileInput" accept="image/*" style="display: none"
+              @change="handleFileChange" />
+          </div>
           <div class="userEmail">{{ userBasicInfo.email }}</div>
         </div>
+
+        <div class="userBasicInfo">
+          <div class="userNameSetting">
+            <div class="userNameInputContainer" id="userNameInputContainer">
+              <v-text-field class="userNameInput" id="userNameInput" label="修改用户名" :placeholder="userBasicInfo.userName"
+                variant="outlined" @keyup.enter="updateUserName" hint="每天只能修改一次"></v-text-field>
+            </div>
+            <div v-if="!showChangeUserNameInput" class="userName" @click="onUserNameClick()">{{ userBasicInfo.userName
+              }}
+            </div>
+          </div>
+          <div class="userOtherInfoContainer">
+            <span class="userOtherInfo" style="margin-left: 0;"><i class="iconfont icon-xihuan" style="color:red;"></i>
+              点赞量: {{
+              userBasicInfo.totalLikes }}</span>
+            <span class="userOtherInfo"><i class="iconfont icon-guankan" style="color:green;"></i> 阅读量: {{
+              userBasicInfo.totalViews }}</span>
+            <span class="userOtherInfo" style="margin-right: 0;"><i class="iconfont icon-boke" style="color:blue;"></i>
+              博客数量: {{
+              userBasicInfo.totalBlogs }}</span>
+          </div>
+        </div>
+
       </div>
 
       <div class="userBlogHeatmapContainer">
@@ -70,13 +94,22 @@ import BackTop from '../components/BackTop.vue';
 
 const router = useRouter()
 
-let startDate = null;
-let endDate = null;
+let calendarData = {
+  startDate: null,
+  endDate: null,
+}
+
+const showChangeUserNameInput = ref(false)
+
+const fileInput = ref(null)
 
 const userBasicInfo = {
-  name: 'user',
+  userName: 'user',
   email: 'mail@mail.com',
-  avatar: '../../public/default.jpg'
+  avatar: ref('../../public/default.jpg'),
+  totalLikes: 1000,
+  totalViews: 10000,
+  totalBlogs: 100,
 }
 
 const userBlogCnt = [
@@ -173,13 +206,13 @@ const option = {
   },
   visualMap: {
     show: true,
-    max: 20,
+    max: 10,
     min: 0,
     orient: 'horizontal',
     bottom: 5,
     left: 'center',
     inRange: {
-      color: ['#ffffff', '#e90000', 'aa0000']
+      color: ['#ffffff', '#008024']
     },
     // type: 'piecewise'
   },
@@ -187,10 +220,10 @@ const option = {
     top: 80,
     left: 20,
     right: 20,
-    cellSize: ['auto', 15],
+    cellSize: [15, 18],
     range: null,
     itemStyle: {
-      borderWidth: 0.5
+      borderWidth: 0.5,
     },
     yearLabel: { show: false },
     monthLabel: {
@@ -207,9 +240,9 @@ const option = {
   }
 };
 
-function getVirtualData() {
-  const start = +echarts.time.parse(startDate);
-  const end = +echarts.time.parse(endDate);
+const getVirtualData = () => {
+  const start = +echarts.time.parse(calendarData.startDate);
+  const end = +echarts.time.parse(calendarData.endDate);
   const dayTime = 3600 * 24 * 1000;
   const data = [];
   for (let time = start; time < end; time += dayTime) {
@@ -221,20 +254,66 @@ function getVirtualData() {
   return data;
 }
 
-function getDate() {
+const getDate = () => {
   let currentDate = new Date();
   let year = currentDate.getFullYear();
   let month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
   let day = currentDate.getDate().toString().padStart(2, '0');
-  startDate = (year - 1) + '-' + month + '-' + day
-  endDate = year + '-' + month + '-' + day
+  calendarData.startDate = (year - 1) + '-' + month + '-' + day
+  calendarData.endDate = year + '-' + month + '-' + day
 
-  option.calendar.range = [startDate, endDate];
+  option.calendar.range = [calendarData.startDate, calendarData.endDate];
   option.series.data = getVirtualData();
 }
 
 const onBlogTitleClick = (blogId) => {
   router.push({ name: 'blogDetail', params: { id: blogId } })
+}
+
+const updateUserName = (event) => {
+  userBasicInfo.userName = event.target.value
+  showChangeUserNameInput.value = false
+  document.getElementById('userNameInputContainer').style.display = 'none';
+}
+
+const onUserNameClick = () => {
+  showChangeUserNameInput.value = true;
+  const userNameInputContainer = document.getElementById('userNameInputContainer');
+  userNameInputContainer.style.display = 'block';
+  const userNameInput = document.getElementById('userNameInput');
+  console.log(userNameInput);
+  userNameInput.focus();
+  userNameInput.addEventListener('blur', () => {
+    showChangeUserNameInput.value = false
+    userNameInputContainer.style.display = 'none';
+  })
+}
+
+const openFilePicker = (event) => {
+  event.stopPropagation(); // 阻止事件冒泡
+  fileInput.value.click();
+}
+
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const formData = new FormData();
+    formData.append('avatar', file.value);
+
+    // 发送formData到后端服务器
+    // axios.post('/upload', formData, {
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data'
+    //   }
+    // }).then(response => {
+    //   // 处理服务器返回的响应
+    // }).catch(error => {
+    //   // 处理错误
+    // });
+  } else {
+    // 提示用户选择文件
+    alert('请选择要上传的文件');
+  }
 }
 
 onMounted(() => {
@@ -246,7 +325,7 @@ onMounted(() => {
 
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .userContainer {
   /* background-color: var(--primary-color); */
   height: auto;
@@ -264,29 +343,54 @@ onMounted(() => {
   width: 100%;
 }
 
-.userBasicInfoContainer {
+.userInfoContainer {
   display: flex;
   align-items: center;
   justify-content: left;
   height: 20vh;
-  width: 30vw;
+  width: 70vw;
   padding: 15px;
   background-color: #fff;
 }
 
 .userAvatar {
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 5px;
+}
+
+.userAvatarContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 15px;
+  margin: 0 20px;
 }
 
 .userBasicInfo {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: flex-start;
+  height: 20vh;
+  width: 60vw;
   padding: 15px;
+  height: 20vh;
+}
+
+.userNameSetting {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: auto;
+  width: 100%;
 }
 
 .userName {
-  font-size: 45px;
+  font-size: 50px;
   font-weight: bold;
   color: var(--dark-background);
 }
@@ -295,8 +399,31 @@ onMounted(() => {
   cursor: pointer;
 }
 
+.userNameInputContainer {
+  height: 5vh;
+  margin: 10px 0;
+  display: none;
+}
+
+.userNameInput {
+  font-size: 30px;
+  font-weight: bold;
+  color: var(--dark-background);
+  width: 20vw;
+}
+
+.userOtherInfoContainer {
+  border-top: 2px solid var(--primary-color);
+  padding: 5px 0;
+}
+
+.userOtherInfo {
+  margin: 10px;
+}
+
 .userEmail {
   font-size: 15px;
+  margin: 10px;
 }
 
 .userBlogHeatmapContainer {
@@ -324,7 +451,7 @@ onMounted(() => {
 }
 
 .heatmapContainer {
-  height: 30vh;
+  height: 35vh;
   width: 100%;
 }
 
