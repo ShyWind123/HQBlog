@@ -51,7 +51,7 @@ const heatmapRef = ref()
 let calendarData = {
   startDate: null,
   endDate: null,
-  monthBlogCnt: 0,
+  monthBlogCnt: 10,
 }
 
 const blogs = [
@@ -94,9 +94,9 @@ const option = {
     top: 20,
     left: 'center',
     text: '本月共发表博客' + calendarData.monthBlogCnt + '篇',
-    // textStyle: {
-    //   color: '#fff'
-    // }
+    textStyle: {
+      color: '#fff'
+    }
   },
   tooltip: {
     trigger: 'item',
@@ -135,9 +135,9 @@ const option = {
     // monthLabel: {
     //   color: "#fff",
     // },
-    // dayLabel: {
-    //   color: "#fff"
-    // }
+    dayLabel: {
+      color: "#fff"
+    }
   },
   series: {
     type: 'heatmap',
@@ -310,6 +310,7 @@ onMounted(() => {
   top: 27vh;
   right: 15vw;
   border-radius: 5px;
+  background-color: var(--dark-background);
 }
 
 .heatmap {

@@ -1,0 +1,36 @@
+Hadoop简介
+起源
+优点
+核心架构
+一、环境准备
+1.1、查看是否安装了java环境
+二、下载Hadoop的相关文件
+三、解压Hadoop安装包
+四、替换bin文件夹
+五、配置Hadoop环境变量
+六、检查环境变量是否配置成功
+七、配置Hadoop的配置文件
+7.1、配置 core-site.xml 文件
+7.2、配置 mapred-site.xml 文件
+7.3、配置 yarn-site.xml 文件
+7.4、新建namenode文件夹和datanode文件夹还有tmp文件夹
+7.4.1、在D:\hadoop-3.1.0创建data文件夹（这个也可以是别的名字，但后面配置要对应修改）
+7.4.2、在data文件夹中（D:\hadoop-3.1.0\data）创建datanode和namenode文件夹还有tmp文件夹
+7.5、配置 hdfs-site.xml 文件
+7.6、配置 hadoop-env.sh 文件
+7.7、配置 hadoop-env.cmd 文件
+八、启动Hadoop服务
+8.1、namenode格式化：hdfs namenode -format
+8.2、开启hdfs：start-dfs.cmd
+8.3、开启yarn：start-yarn.cmd
+8.4、或者直接开启所有服务：start-all.cmd
+8.5、查看Hadoop运行的进程：jps
+8.6、访问namenode和HDFS的页面以及resourcemanager的页面来观察集群是否正常
+8.7、关闭Hadoop集群：stop-all.cmd
+九、Hadoop问题处理和注意事项
+9.1、hadoop启动报错“ org/apache/hadoop/yarn/server/timelineservice/collector/TimelineCollectorManager”处理办法
+9.2、namenode重新格式化注意事项
+9.3、Address already in use: bind
+9.3.1、查看占用该端口的PID，注意端口号要加上双引号
+9.3.2、使用tasklist查看 PID 对应的进程名
+9.3.3、结束进程

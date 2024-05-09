@@ -9,6 +9,7 @@ import User from '../views/User.vue'
 import Tags from '../views/Tags.vue'
 import Search from '../views/Search.vue'
 import BlogDetail from '../views/BlogDetail.vue'
+import Edit from '../views/Edit.vue'
 
 
 const routerConfig = {
@@ -62,6 +63,11 @@ const routerConfig = {
           name:'blogDetail',
           path:'blogDetail/:id',
           component: BlogDetail
+        },
+        {
+          name:'edit',
+          path:'edit/:id',
+          component: Edit
         }
       ]
     }
