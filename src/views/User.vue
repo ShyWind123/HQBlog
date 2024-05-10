@@ -48,10 +48,10 @@
       <div class="userBlogListContainer">
         <div class="boxshadow userBlogList">
           <div class="userBlogListTitle">我的博客</div>
-          <v-timeline class="timelineContainer" side="end">
-            <v-timeline-item size="lx-smallarge" v-for="blog in userBlogList">
+          <v-timeline line-color="white" class="timelineContainer" side="end">
+            <v-timeline-item dot-color="#e90000" size="lx-smallarge" v-for="blog in userBlogList">
               <template v-slot:opposite>
-                <span>{{ blog.date }}</span>
+                <span style="color: #fff;">{{ blog.date }}</span>
               </template>
               <div class="blogCard boxshadow">
                 <div class="blogTitleContainer" @click="onBlogTitleClick(blog.id)">
@@ -330,7 +330,7 @@ onMounted(() => {
   /* background-color: var(--primary-color); */
   height: auto;
   min-height: 100vh;
-  width: 70vw;
+  width: 75vw;
   overflow: auto;
   padding: 15px;
 }
@@ -489,13 +489,13 @@ onMounted(() => {
   width: 100%;
   height: auto;
   min-height: 60vh;
-  background-color: var(--light-background);
+  background-color: var(--dark-background);
   border-radius: 5px;
   padding: 15px;
 }
 
 .userBlogListTitle {
-  color: var(--dark-background);
+  color: var(--light-background);
   font-size: 20px;
   font-weight: bold;
 }

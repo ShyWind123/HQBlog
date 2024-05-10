@@ -3,7 +3,10 @@
   <div class="blogDeatilContainer">
     <div ref="catagoryRef" class="blogCatagoryContainer boxshadow">
       <span class="blogCatagoryTitle">目录</span>
-      <div></div>
+      <div class="blogCatagoryContent">
+        <v-treeview bg-color="#212121" base-colo="#fff" :items="catagoryData" item-value="id" open-all
+          density="compact"></v-treeview>
+      </div>
     </div>
     <div class="blogDataContainer">
       <div class="blogInfo1Container">
@@ -90,8 +93,78 @@ const blogData = {
   views: 1000
 }
 
-const catagoryData = {
-}
+const catagoryData = [
+  {
+    id: 1,
+    title: 'Applications :',
+    children: [
+      { id: 2, title: 'Calendar : app' },
+      { id: 3, title: 'Chrome : app' },
+      { id: 4, title: 'Webstorm : app' },
+    ],
+  },
+  {
+    id: 5,
+    title: 'Documents :',
+    children: [
+      {
+        id: 6,
+        title: 'vuetify :',
+        children: [
+          {
+            id: 7,
+            title: 'src :',
+            children: [
+              { id: 8, title: 'index : ts' },
+              { id: 9, title: 'bootstrap : ts' },
+            ],
+          },
+        ],
+      },
+      {
+        id: 10,
+        title: 'material2 :',
+        children: [
+          {
+            id: 11,
+            title: 'src :',
+            children: [
+              { id: 12, title: 'v-btn : ts' },
+              { id: 13, title: 'v-card : ts' },
+              { id: 14, title: 'v-window : ts' },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 15,
+    title: 'Downloads :',
+    children: [
+      { id: 16, title: 'October : pdf' },
+      { id: 17, title: 'November : pdf' },
+      { id: 18, title: 'Tutorial : html' },
+    ],
+  },
+  {
+    id: 19,
+    title: 'Videos :',
+    children: [
+      {
+        id: 20,
+        title: 'Tutorials :',
+        children: [
+          { id: 21, title: 'Basic layouts : mp4' },
+          { id: 22, title: 'Advanced techniques : mp4' },
+          { id: 23, title: 'All about app : dir' },
+        ],
+      },
+      { id: 24, title: 'Intro : mov' },
+      { id: 25, title: 'Conference introduction : avi' },
+    ],
+  },
+]
 
 const uid = 1
 
@@ -130,7 +203,7 @@ onMounted(() => {
 <style scoped>
 .blogDeatilContainer {
   height: auto;
-  min-height: 150vh;
+  /* min-height: 150vh; */
   overflow: auto;
   width: 72vw;
   display: flex;
@@ -145,13 +218,11 @@ onMounted(() => {
   background-color: var(--dark-background2);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   border-radius: 5px;
   margin: 50px 20px;
   padding: 20px;
-  position: fixed;
   left: 10vw;
-  height: 10vh;
 }
 
 .blogCatagoryTitle {
@@ -160,9 +231,13 @@ onMounted(() => {
   color: var(--light-background);
 }
 
+.blogCatagoryContent {
+  height: auto;
+  width: 100%;
+  margin: 15px 0;
+}
+
 .blogDataContainer {
-  position: relative;
-  left: 15vw;
   width: 55vw;
   height: auto;
   min-height: 100vh;
@@ -234,11 +309,12 @@ onMounted(() => {
 
 .blogContentContainer {
   width: 100%;
-  height: auto;
-  min-height: 80vh;
+  height: 100%;
+  min-height: 150vh;
   border-radius: 5px;
   /* border: 2px solid var(--dark-background2); */
   padding: 20px;
   margin: 20px 10px 50px 10px;
+  background-color: var(--dark-background);
 }
 </style>
