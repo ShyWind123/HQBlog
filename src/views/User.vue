@@ -92,6 +92,7 @@ import * as echarts from 'echarts';
 import { useRouter } from 'vue-router'
 import BackTop from '../components/BackTop.vue';
 
+
 const router = useRouter()
 
 let calendarData = {
@@ -220,7 +221,7 @@ const option = {
     top: 80,
     left: 20,
     right: 20,
-    cellSize: [15, 18],
+    cellSize: [15, 15],
     range: null,
     itemStyle: {
       borderWidth: 0.5,
@@ -325,7 +326,7 @@ onMounted(() => {
 
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .userContainer {
   /* background-color: var(--primary-color); */
   height: auto;
@@ -451,7 +452,7 @@ onMounted(() => {
 }
 
 .heatmapContainer {
-  height: 35vh;
+  height: 38vh;
   width: 100%;
 }
 

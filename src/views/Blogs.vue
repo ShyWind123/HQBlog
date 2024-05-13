@@ -113,7 +113,7 @@ const option = {
     max: 10,
     min: 0,
     orient: 'horizontal',
-    bottom: 10,
+    bottom: 15,
     left: 'center',
     inRange: {
       color: ['#ffffff', '#008024']
@@ -125,7 +125,7 @@ const option = {
     top: 100,
     left: 20,
     right: 20,
-    cellSize: [15, 25],
+    cellSize: [25, 25],
     range: null,
     itemStyle: {
       borderWidth: 0.5,
@@ -303,8 +303,8 @@ onMounted(() => {
 }
 
 .heatmapContainer {
-  height: 35vh;
-  width: 20vw;
+  height: 300px;
+  width: 250px;
   margin: 20px;
   position: fixed;
   top: 27vh;

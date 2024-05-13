@@ -4,8 +4,7 @@
     <div ref="catagoryRef" class="blogCatagoryContainer boxshadow">
       <span class="blogCatagoryTitle">目录</span>
       <div class="blogCatagoryContent">
-        <v-treeview bg-color="#212121" base-colo="#fff" :items="catagoryData" item-value="id" open-all
-          density="compact"></v-treeview>
+
       </div>
     </div>
     <div class="blogDataContainer">
