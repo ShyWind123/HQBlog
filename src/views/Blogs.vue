@@ -1,4 +1,14 @@
 <template>
+  <v-snackbar v-model="isNowLogin" :timeout="2000" location="top" color="green-accent-4">
+    <div style="justify-content: center; display: flex; align-items: center; color:aliceblue; font-size: 16px;">
+      登录成功！
+    </div>
+  </v-snackbar>
+  <v-snackbar v-model="isNowLogout" :timeout="2000" location="top" color="green-accent-4">
+    <div style="justify-content: center; display: flex; align-items: center; color:aliceblue; font-size: 16px;">
+      已退出登录！
+    </div>
+  </v-snackbar>
   <div class="blogContainer">
     <div class="allTitleContainer"><span class="allTitle">所有博客</span></div>
     <div v-for="blog in blogs" class="blogCard boxshadow">
@@ -31,21 +41,30 @@
       </div>
     </div>
   </div>
-  <div class="heatmapContainer boxshadow" ref="heatmapRef">
-    <div id="heatmap" class="heatmap"></div>
+  <div class="funContainer">
+    <div v-if="loginStore.getIsLogin()" class="heatmapContainer boxshadow" ref="heatmapRef">
+      <div id="heatmap" class="heatmap"></div>
+    </div>
+    <div class="rankContainer boxshadow">
+      <div class="rank"></div>
+    </div>
   </div>
   <BackTop></BackTop>
 </template>
 
-<script setup lang='ts'>
+<script setup lang='js'>
 import BackTop from '../components/BackTop.vue';
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
+import { useLoginStore } from '@/store/store';
 import * as echarts from 'echarts';
 
 const router = useRouter()
+const loginStore = useLoginStore()
 
-const backTopRef = ref()
+const { isNowLogin, isNowLogout } = storeToRefs(loginStore)
+
 const heatmapRef = ref()
 
 let calendarData = {
@@ -109,11 +128,10 @@ const option = {
     }
   },
   visualMap: {
-    show: true,
+    show: false,
     max: 10,
     min: 0,
     orient: 'horizontal',
-    bottom: 15,
     left: 'center',
     inRange: {
       color: ['#ffffff', '#008024']
@@ -186,14 +204,9 @@ const getVirtualData = () => {
 }
 
 onMounted(() => {
-  initHeatmap()
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 200) {
-      heatmapRef.value.style.top = '5vh'
-    } else {
-      heatmapRef.value.style.top = '27vh'
-    }
-  });
+  if (loginStore.getIsLogin()) {
+    initHeatmap()
+  }
 });
 </script>
 
@@ -203,10 +216,9 @@ onMounted(() => {
   left: 0;
   /* background-color: var(--primary-color); */
   height: auto;
-  width: 70vw;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   padding: 50px 0;
 }
@@ -222,6 +234,7 @@ onMounted(() => {
 }
 
 .allTitle {
+  margin: 0px 10px;
   font-size: 30px;
   font-weight: bold;
   border-bottom: 4px solid var(--primary-color);
@@ -302,13 +315,18 @@ onMounted(() => {
   width: 100%;
 }
 
+.funContainer {
+  width: 20vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 8vh 30px;
+}
+
 .heatmapContainer {
-  height: 300px;
-  width: 250px;
+  height: 38vh;
   margin: 20px;
-  position: fixed;
-  top: 27vh;
-  right: 15vw;
   border-radius: 5px;
   background-color: var(--dark-background);
 }
@@ -316,5 +334,12 @@ onMounted(() => {
 .heatmap {
   width: 100%;
   height: 100%;
+}
+
+.rankContainer {
+  margin: 20px;
+  width: 100%;
+  height: 50vh;
+  background-color: #aca;
 }
 </style>

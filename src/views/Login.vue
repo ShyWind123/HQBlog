@@ -13,17 +13,19 @@
       </div>
 
       <div class="inputContainer">
-        <v-form v-if="loginType === 0" v-model="form[0]" @submit.prevent="onSubmit"
+        <v-form v-if="loginType == 0" v-model="form[0]" @submit.prevent="onSubmit"
           style="display: flex; flex-direction: column;justify-content: center;align-items: center;">
-          <v-text-field v-model="passwordForm.username" :rules="[emptyRule('邮箱或用户名', passwordForm.username)]"
-            variant="outlined" :readonly="loading" label="邮箱/用户名" placeholder="请输入邮箱或用户名" bg-color="#212121"
-            color="#fff" class="inputBox" spellcheck="false" clearable></v-text-field>
-          <v-text-field v-model="passwordForm.password" :rules="[emptyRule('密码', passwordForm.password)]"
+          <v-text-field v-model="passwordForm.email" :rules="[ruleStore.emptyRule('邮箱', passwordForm.email)]"
+            variant="outlined" :readonly="loading" label="邮箱" placeholder="请输入邮箱 bg-color=" #212121" color="#fff"
+            class="inputBox" spellcheck="false" clearable></v-text-field>
+          <v-text-field v-model="passwordForm.password" :rules="[ruleStore.emptyRule('密码', passwordForm.password)]"
             variant="outlined" :readonly="loading" label="密码" placeholder="请输入密码" bg-color="#212121" color="#fff"
-            class="inputBox" :type="showPassword ? 'text' : 'password'" spellcheck="false">
+            class="inputBox" :type="passwordForm.showPassword ? 'text' : 'password'" spellcheck="false">
             <template v-slot:append-inner>
-              <i v-if="showPassword" class='iconfont icon-yanjing_yincang' @click="showPassword = !showPassword"></i>
-              <i v-else class='iconfont icon-yanjing_xianshi' @click="showPassword = !showPassword"></i>
+              <i v-if="passwordForm.showPassword" class='iconfont icon-yanjing_yincang'
+                @click="passwordForm.showPassword = !passwordForm.showPassword"></i>
+              <i v-else class='iconfont icon-yanjing_xianshi'
+                @click="passwordForm.showPassword = !passwordForm.showPassword"></i>
             </template>
           </v-text-field>
           <button class="btn">登录
@@ -34,10 +36,11 @@
           </button>
         </v-form>
 
-        <v-form v-if="loginType === 1" v-model="form[1]" @submit.prevent="onSubmit">
-          <v-text-field v-model="emailCodeForm.email" :rules="[emptyRule('邮箱', emailCodeForm.email), emailRule]"
-            variant="outlined" :readonly="loading" label="邮箱" placeholder="请输入邮箱" bg-color="#212121" color="#fff"
-            class="inputBox" spellcheck="false" clearable>
+        <v-form v-if="loginType == 1" v-model="form[1]" @submit.prevent="onSubmit">
+          <v-text-field v-model="codeForm.email"
+            :rules="[ruleStore.emptyRule('邮箱', codeForm.email), ruleStore.emailRule]" variant="outlined"
+            :readonly="loading" label="邮箱" placeholder="请输入邮箱" bg-color="#212121" color="#fff" class="inputBox"
+            spellcheck="false" clearable>
           </v-text-field>
           <span></span>
           <button class="btn">验证邮箱
@@ -48,29 +51,36 @@
           </button>
         </v-form>
 
-        <v-form v-if="loginType === 2" v-model="form[2]" @submit.prevent="onSubmit">
-          <v-text-field v-model="registerForm.username" :rules="[emptyRule('用户名', registerForm.username)]"
-            variant="outlined" :readonly="loading" label="用户名" placeholder="请输入用户名" bg-color="#212121" color="#fff"
+        <v-form v-if="loginType == 2" v-model="form[2]" @submit.prevent="onSubmit">
+          <v-text-field v-model="registerForm.username"
+            :rules="[ruleStore.emptyRule('用户名', registerForm.username), ruleStore.usernameRule]" variant="outlined"
+            :readonly="loading" label="用户名" placeholder="请输入用户名" bg-color="#212121" color="#fff"
             class="registerInputBox" spellcheck="false" clearable></v-text-field>
-          <v-text-field v-model="registerForm.email" :rules="[emptyRule('邮箱', registerForm.email), emailRule]"
-            variant="outlined" :readonly="loading" label="邮箱" placeholder="请输入邮箱" bg-color="#212121" color="#fff"
-            class="registerInputBox" spellcheck="false" clearable></v-text-field>
+          <v-text-field v-model="registerForm.email"
+            :rules="[ruleStore.emptyRule('邮箱', registerForm.email), ruleStore.emailRule]" variant="outlined"
+            :readonly="loading" label="邮箱" placeholder="请输入邮箱" bg-color="#212121" color="#fff" class="registerInputBox"
+            spellcheck="false" clearable></v-text-field>
           <v-text-field v-model="registerForm.password1"
-            :rules="[emptyRule('密码', registerForm.password1), passwordRule]" variant="outlined" :readonly="loading"
-            label="密码" placeholder="请输入密码" bg-color="#212121" color="#fff" class="registerInputBox"
-            :type="showPassword ? 'text' : 'password'" spellcheck="false" hint="密码长度至少6位，不能超过16位，必须包含数字和字母">
+            :rules="[ruleStore.emptyRule('密码', registerForm.password1), ruleStore.passwordRule]" variant="outlined"
+            :readonly="loading" label="密码" placeholder="请输入密码" bg-color="#212121" color="#fff" class="registerInputBox"
+            :type="registerForm.showPassword1 ? 'text' : 'password'" spellcheck="false"
+            hint="密码长度至少6位，不能超过16位，必须包含数字和字母">
             <template v-slot:append-inner>
-              <i v-if="showPassword" class='iconfont icon-yanjing_yincang' @click="showPassword = !showPassword"></i>
-              <i v-else class='iconfont icon-yanjing_xianshi' @click="showPassword = !showPassword"></i>
+              <i v-if="registerForm.showPassword1" class='iconfont icon-yanjing_yincang'
+                @click="registerForm.showPassword1 = !registerForm.showPassword1"></i>
+              <i v-else class='iconfont icon-yanjing_xianshi'
+                @click="registerForm.showPassword1 = !registerForm.showPassword1"></i>
             </template>
           </v-text-field>
           <v-text-field v-model="registerForm.password2"
-            :rules="[emptyRule('重复密码', registerForm.password2), passwordRule, passwordAgainRule(registerForm.password1, registerForm.password2)]"
+            :rules="[ruleStore.emptyRule('重复密码', registerForm.password2), ruleStore.passwordRule, ruleStore.passwordAgainRule(registerForm.password1, registerForm.password2)]"
             variant="outlined" :readonly="loading" label="重复密码" placeholder="请再次输入密码" bg-color="#212121" color="#fff"
-            class="registerInputBox" :type="showPassword ? 'text' : 'password'" spellcheck="false">
+            class="registerInputBox" :type="registerForm.showPassword2 ? 'text' : 'password'" spellcheck="false">
             <template v-slot:append-inner>
-              <i v-if="showPassword" class='iconfont icon-yanjing_yincang' @click="showPassword = !showPassword"></i>
-              <i v-else class='iconfont icon-yanjing_xianshi' @click="showPassword = !showPassword"></i>
+              <i v-if="registerForm.showPassword2" class='iconfont icon-yanjing_yincang'
+                @click="registerForm.showPassword2 = !registerForm.showPassword2"></i>
+              <i v-else class='iconfont icon-yanjing_xianshi'
+                @click="registerForm.showPassword2 = !registerForm.showPassword2"></i>
             </template>
           </v-text-field>
 
@@ -84,76 +94,204 @@
       </div>
     </div>
   </div>
-  <v-dialog v-model="showDialog" width="auto">
-    <v-card max-width="400" prepend-icon="mdi-update" text="我们已经发送验证码到你的邮箱，请注意查收。">
-      <v-otp-input></v-otp-input>
+  <v-dialog v-model="showDialog" width="auto" persistent>
+    <v-card max-width="400" prepend-icon="mdi-update">
+      <h3 style="margin:0 15px;">{{ sendCodeText }}</h3>
+      <v-otp-input @finish="codeSubmit" v-model="code"></v-otp-input>
+      <v-btn @click="showDialog.value = false">取消</v-btn>
     </v-card>
   </v-dialog>
 
 </template>
 
-<script setup lang='ts'>;
+<script setup lang='js'>;
 import { ref, reactive, onMounted } from 'vue'
-const passwordBtn = ref()
-const phoneCodeBtn = ref()
+import axios from 'axios'
+import { useRouter } from 'vue-router';
+import { useLoginStore, useRuleStore } from '@/store/store'
+const loginStore = useLoginStore()
+const ruleStore = useRuleStore()
+const router = useRouter();
 const form = [ref(false), ref(false), ref(false)]
-const isPassword = ref(true)
 const showSnackBar = ref(false)
-const showPassword = ref(false)
 const showDialog = ref(false)
 const loading = ref(false)
 const loginType = ref(0)
+const code = ref(null)
+const sendCodeText = ref('验证码发送成功！请在10分钟内填写。')
 const passwordForm = ref({
-  username: null,
+  email: null,
   password: null,
+  showPassword: false
 })
-const emailCodeForm = ref({
+const codeForm = ref({
   email: null,
   code: null,
 })
 const registerForm = ref({
+  uid: null,
   username: null,
   email: null,
   password1: null,
   password2: null,
+  showPassword1: false,
+  showPassword2: false,
   code: null
 })
 
-
-const emptyRule = (name, v) => {
-  if (v) return true;
-  return '请输入' + name
+const setJWTandCookie = (key, value) => {
+  localStorage.setItem(key, value);
+  setCookie(key, value, 30 * 24 * 60 * 60)//存储localStorage的同时，也存储一个cookie来监听
 }
-
-const passwordRule = (v) => {
-  if (v.length < 6)
-    return '密码长度至少6位'
-  else if (v.length > 16)
-    return '密码长度不能超过16位'
-  else if (!/\d/.test(v))
-    return '密码必须包含数字'
-  else if (!/[a-zA-Z]/.test(v))
-    return '密码必须包含字母'
-}
-
-const passwordAgainRule = (v1, v2) => {
-  if (v1 !== v2)
-    return '两次密码输入不一致'
-}
-
-const emailRule = (v) => {
-  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return true;
-  return '请输入正确的邮箱'
+//设置cookie    
+const setCookie = (name, value, seconds) => {
+  seconds = seconds || 0;   //seconds有值就直接赋值，没有为0    
+  var expires = "";
+  if (seconds != 0) {      //设置cookie生存时间    
+    var date = new Date();
+    date.setTime(date.getTime() + (seconds * 1000));
+    expires = "; expires=" + date.toGMTString();
+  }
+  document.cookie = name + "=" + escape(value) + expires + "; path=/";   //转码并赋值   
 }
 
 const onSubmit = () => {
-  console.log(passwordForm)
   if (!form[loginType.value]) return
   loading.value = true
   setTimeout(() => (loading.value = false), 2000)
-  if (loginType.value === 1 || loginType.value === 2) {
-    showDialog.value = true;
+
+  if (loginType.value === 0) {
+    console.log(passwordForm);
+    loginByPassword();
+  } else if (loginType.value === 1) {
+    console.log(codeForm);
+    sendLoginEmailCode();
+  } else if (loginType.value === 2) {
+    console.log(registerForm);
+    sendRegisterEmailCode();
   }
+}
+
+const loginByPassword = () => {
+  axios.request({
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: 'http://8.134.215.31:2002/login/password',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: {
+      "email": passwordForm.value.email,
+      "password": passwordForm.value.password
+    }
+  })
+    .then((response) => {
+      setJWTandCookie("JWT_TOKEN", response.data.data.jwt)
+      loginStore.login();
+      loginStore.setIsNowLogin(true)
+      router.push('/HQBlog/home')
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+const sendLoginEmailCode = () => {
+  axios.request({
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: `http://8.134.215.31:2002/login/code?email=${codeForm.value.email}`,
+    headers: {}
+  })
+    .then((response) => {
+      if (response.data.code == 1) {
+        showDialog.value = true;
+      } else {
+        console.log(response.data.msg);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+const sendRegisterEmailCode = () => {
+  axios.request({
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: `http://8.134.215.31:2002/register/code?email=${registerForm.value.email}`,
+    headers: {}
+  })
+    .then((response) => {
+      if (response.data.code == 1) {
+        showDialog.value = true;
+      } else {
+        console.log(response.data.msg);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+const codeSubmit = () => {
+  showDialog.value = false;
+  if (loginType.value === 1) {
+    loginCodeSubmit();
+  } else if (loginType.value === 2) {
+    registerCodeSubmit();
+  }
+}
+
+const loginCodeSubmit = () => {
+  axios.request({
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: 'http://8.134.215.31:2002/login/code/submit',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: {
+      "email": codeForm.value.email,
+      "code": code.value
+    }
+  })
+    .then((response) => {
+      setJWTandCookie("JWT_TOKEN", response.data.data.jwt)
+      loginStore.login();
+      loginStore.setIsNowLogin(true)
+      router.push('/HQBlog/home')
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+const registerCodeSubmit = () => {
+  axios.request({
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: 'http://8.134.215.31:2002/register/submit',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: {
+      "email": registerForm.value.email,
+      "username": registerForm.value.username,
+      "password": registerForm.value.password1,
+      "code": code.value,
+      "uid": registerForm.value.uid
+    }
+  })
+    .then((response) => {
+      setJWTandCookie("JWT_TOKEN", response.data.data.jwt)
+      loginStore.login();
+      loginStore.setIsNowLogin(true)
+      router.push('/HQBlog/home')
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 const changeLoginType = (type) => {
@@ -163,28 +301,6 @@ const changeLoginType = (type) => {
   }
   document.querySelectorAll('.loginTypeTitle')[type].classList.add('active')
 }
-
-const clickpassword = () => {
-  passwordBtn.value.classList.add('btn-selected')
-  phoneCodeBtn.value.classList.remove('btn-selected')
-  isPassword.value = true
-}
-const clickPhoneCode = () => {
-  passwordBtn.value.classList.remove('btn-selected')
-  phoneCodeBtn.value.classList.add('btn-selected')
-  isPassword.value = false
-}
-
-const gotoRegister = () => {
-  clickPhoneCode()
-}
-
-const onFinish = values => {
-  console.log('Success:', values);
-};
-const onFinishFailed = errorInfo => {
-  console.log('Failed:', errorInfo);
-};
 
 onMounted(() => {
   showSnackBar.value = true;

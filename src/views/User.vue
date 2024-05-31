@@ -15,7 +15,7 @@
           <div class="userNameSetting">
             <div class="userNameInputContainer" id="userNameInputContainer">
               <v-text-field class="userNameInput" id="userNameInput" label="修改用户名" :placeholder="userBasicInfo.userName"
-                variant="outlined" @keyup.enter="updateUserName" hint="每天只能修改一次"></v-text-field>
+                variant="outlined" @keyup.enter="updateUserName"></v-text-field>
             </div>
             <div v-if="!showChangeUserNameInput" class="userName" @click="onUserNameClick()">{{ userBasicInfo.userName
               }}
@@ -33,6 +33,11 @@
           </div>
         </div>
 
+        <div class="buttonsContainer">
+          <v-btn color="#000000" size="large" class="changePasswordBtn"
+            @click="showChangePasswordDialog = true">修改密码</v-btn>
+          <v-btn color="#e90000" size="large" class="logoutBtn" @click="showLogoutDialog = true">退出登录</v-btn>
+        </div>
       </div>
 
       <div class="userBlogHeatmapContainer">
@@ -83,16 +88,66 @@
       </div>
     </div>
   </div>
+  <v-dialog v-model="showLogoutDialog" width="auto">
+    <v-card width="250" prepend-icon="mdi-update" title="是否退出登录？">
+      <v-btn @click="logout()">确定</v-btn>
+      <v-btn @click="showLogoutDialog = false">取消</v-btn>
+    </v-card>
+  </v-dialog>
+  <v-dialog v-model="showChangePasswordDialog" width="auto">
+    <v-card width="500" prepend-icon="mdi-update" title="修改密码">
+      <v-form v-model="formCompleted" class="changePasswordFormContainer">
+        <v-text-field v-model="changePasswordForm.oldPassword"
+          :rules="[ruleStore.emptyRule('原密码', changePasswordForm.oldPassword)]" variant="outlined" :readonly="loading"
+          label="原密码" placeholder="请输入原密码" class="registerInputBox"
+          :type="changePasswordForm.showOldPassword ? 'text' : 'password'" spellcheck="false">
+          <template v-slot:append-inner>
+            <i v-if="changePasswordForm.showOldPassword" class='iconfont icon-yanjing_yincang'
+              @click="changePasswordForm.showOldPassword = !changePasswordForm.showOldPassword"></i>
+            <i v-else class='iconfont icon-yanjing_xianshi'
+              @click="changePasswordForm.showOldPassword = !changePasswordForm.showOldPassword"></i>
+          </template>
+        </v-text-field>
+        <v-text-field v-model="changePasswordForm.password1"
+          :rules="[ruleStore.emptyRule('新密码', changePasswordForm.password1), ruleStore.passwordRule]" variant="outlined"
+          :readonly="loading" label="新密码" placeholder="请输入新密码" class="registerInputBox"
+          :type="changePasswordForm.showPassword1 ? 'text' : 'password'" spellcheck="false"
+          hint="密码长度至少6位，不能超过16位，必须包含数字和字母">
+          <template v-slot:append-inner>
+            <i v-if="changePasswordForm.showPassword1" class='iconfont icon-yanjing_yincang'
+              @click="changePasswordForm.showPassword1 = !changePasswordForm.showPassword1"></i>
+            <i v-else class='iconfont icon-yanjing_xianshi'
+              @click="changePasswordForm.showPassword1 = !changePasswordForm.showPassword1"></i>
+          </template>
+        </v-text-field>
+        <v-text-field v-model="changePasswordForm.password2"
+          :rules="[ruleStore.emptyRule('重复新密码', changePasswordForm.password2), ruleStore.passwordRule, ruleStore.passwordAgainRule(changePasswordForm.password1, changePasswordForm.password2)]"
+          variant="outlined" :readonly="loading" label="重复新密码" placeholder="请再次输入新密码" class="registerInputBox"
+          :type="changePasswordForm.showPassword2 ? 'text' : 'password'" spellcheck="false">
+          <template v-slot:append-inner>
+            <i v-if="changePasswordForm.showPassword2" class='iconfont icon-yanjing_yincang'
+              @click="changePasswordForm.showPassword2 = !changePasswordForm.showPassword2"></i>
+            <i v-else class='iconfont icon-yanjing_xianshi'
+              @click="changePasswordForm.showPassword2 = !changePasswordForm.showPassword2"></i>
+          </template>
+        </v-text-field>
+      </v-form>
+      <v-btn @click="changePassword()">确定</v-btn>
+      <v-btn @click="showChangePasswordDialog = false">取消</v-btn>
+    </v-card>
+  </v-dialog>
   <BackTop></BackTop>
 </template>
 
-<script setup lang='ts'>
+<script setup lang='js'>
 import { ref, reactive, onMounted } from 'vue'
 import * as echarts from 'echarts';
 import { useRouter } from 'vue-router'
+import { useLoginStore, useRuleStore } from '@/store/store'
 import BackTop from '../components/BackTop.vue';
 
-
+const loginStore = useLoginStore()
+const ruleStore = useRuleStore()
 const router = useRouter()
 
 let calendarData = {
@@ -100,9 +155,21 @@ let calendarData = {
   endDate: null,
 }
 
+const changePasswordForm = ref({
+  oldPassword: '',
+  password1: '',
+  password2: '',
+  showOldPassword: false,
+  showPassword1: false,
+  showPassword2: false,
+})
+
+const formCompleted = ref(false)
 const showChangeUserNameInput = ref(false)
 
 const fileInput = ref(null)
+const showLogoutDialog = ref(false)
+const showChangePasswordDialog = ref(false)
 
 const userBasicInfo = {
   userName: 'user',
@@ -205,12 +272,32 @@ const option = {
       type: 'shadow'
     }
   },
+  // visualMap: {
+  //   show: true,
+  //   top: 60,
+  //   max: 10,
+  //   min: 0,
+  //   orient: 'horizontal',
+  //   type: 'piecewise',
+  //   textStyle: {
+  //     color: '#ffffff'
+  //   },
+  //   left: 'center',
+  //   inRange: {
+  //     color: ['#ffffff', '#008024']
+  //   },
+  //   // type: 'piecewise'
+  // },
   visualMap: {
-    show: true,
+    show: false,
+    top: 60,
     max: 10,
     min: 0,
     orient: 'horizontal',
-    bottom: 5,
+    type: 'piecewise',
+    textStyle: {
+      color: '#ffffff'
+    },
     left: 'center',
     inRange: {
       color: ['#ffffff', '#008024']
@@ -218,6 +305,7 @@ const option = {
     // type: 'piecewise'
   },
   calendar: {
+    // bottom: 30,
     top: 80,
     left: 20,
     right: 20,
@@ -241,6 +329,13 @@ const option = {
   }
 };
 
+const changePassword = () => {
+  if (!formCompleted.value) {
+    return;
+  }
+  console.log(changePasswordForm.value);
+}
+
 const getVirtualData = () => {
   const start = +echarts.time.parse(calendarData.startDate);
   const end = +echarts.time.parse(calendarData.endDate);
@@ -253,6 +348,21 @@ const getVirtualData = () => {
     ]);
   }
   return data;
+}
+
+const cleatCookie = (name, value) => {
+  var exp = new Date();
+  exp.setTime(exp.getTime() - 1);
+  const expires = "; expires=" + exp.toGMTString();
+  document.cookie = name + "=" + escape(value) + expires + "; path=/";   //转码并赋值   
+}
+
+const logout = () => {
+  cleatCookie('JWT_TOKEN', localStorage.getItem('JWT-TOKEN'))
+  localStorage.removeItem('JWT_TOKEN')
+  loginStore.logout()
+  loginStore.setIsNowLogout(true)
+  router.push('/HQBlog/home')
 }
 
 const getDate = () => {
@@ -427,6 +537,25 @@ onMounted(() => {
   margin: 10px;
 }
 
+.buttonsContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.changePasswordBtn {
+  margin: 6px 0;
+}
+
+.changePasswordFormContainer {
+  margin: 20px 50px;
+}
+
+.logoutBtn {
+  margin: 6px 0;
+}
+
 .userBlogHeatmapContainer {
   display: flex;
   justify-content: space-between;
@@ -452,7 +581,7 @@ onMounted(() => {
 }
 
 .heatmapContainer {
-  height: 38vh;
+  height: 32vh;
   width: 100%;
 }
 

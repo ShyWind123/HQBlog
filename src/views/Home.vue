@@ -47,7 +47,7 @@
       </div>
 
       <div class="layout-content">
-        <router-view></router-view>
+        <router-view :key="routerViewKey"></router-view>
       </div>
 
       <v-footer>
@@ -79,6 +79,8 @@ const searchBoxInput = ref(0)
 
 const isSearchBoxShow = ref(false)
 const searchContent = ref('')
+
+const routerViewKey = ref(0)
 
 const gotoLinks = [
   {
@@ -151,7 +153,27 @@ const changeSearchValue = (e) => {
   searchContent.value = e.target.value
 }
 
+const getCookie = (user) => {
+  var cookieArr = document.cookie.split(';');
+  for (var i = 0; i < cookieArr.length; i++) {
+    var cookiePair = cookieArr[i].split('=');
+    if (user == cookiePair[0].trim()) {
+      return decodeURIComponent(cookiePair[1]);
+    }
+  }
+  return null;
+}
+
+const checkCookie = () => {
+  const user = getCookie('JWT_TOKEN')
+  if (user != null) {
+    loginStore.login()
+    routerViewKey.value++
+  }
+}
+
 onMounted(() => {
+  checkCookie()
 })
 </script>
 
@@ -275,7 +297,7 @@ onMounted(() => {
   overflow: auto;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .v-footer {

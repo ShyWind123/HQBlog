@@ -60,7 +60,7 @@
   </v-dialog>
 </template>
 
-<script setup lang='ts'>
+<script setup lang='js'>
 import { ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
 import Loading from '../components/Loading.vue'
@@ -70,7 +70,7 @@ const router = useRouter()
 
 const loading = ref(true)
 
-const blogId = ref<string>('0')
+const blogId = ref < string > ('0')
 
 const catagoryRef = ref()
 
@@ -186,7 +186,7 @@ const onCancelDeleteBlog = () => {
 }
 
 onMounted(() => {
-  blogId.value = route.params.id as string;
+  blogId.value = route.params.id;
   document.documentElement.scrollTop = 0
   window.addEventListener('scroll', () => {
     if (window.scrollY > 200) {
