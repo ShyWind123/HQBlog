@@ -1,10 +1,13 @@
 <template>
+  <div v-if="!isGetData" style="height: 100vh;">
+    <loading></loading>
+  </div>
   <div class="userContainer">
     <div class="subContainer1">
       <div class="userInfoContainer">
         <div class="userAvatarContainer">
           <div class="userAvatar">
-            <v-avatar :image="userBasicInfo.avatar.value" size="70" @click="openFilePicker"></v-avatar>
+            <v-avatar :image="userBasicInfo.avatar" size="70" @click="openFilePicker"></v-avatar>
             <input type="file" id="avatarInput" ref="fileInput" accept="image/*" style="display: none"
               @change="handleFileChange" />
           </div>
@@ -14,22 +17,26 @@
         <div class="userBasicInfo">
           <div class="userNameSetting">
             <div class="userNameInputContainer" id="userNameInputContainer">
-              <v-text-field class="userNameInput" id="userNameInput" label="修改用户名" :placeholder="userBasicInfo.userName"
-                variant="outlined" @keyup.enter="updateUserName"></v-text-field>
+              <v-text-field v-model="changeUsernameForm.newUsername" class="userNameInput" id="userNameInput"
+                label="修改用户名" :placeholder="userBasicInfo.userName" variant="outlined"
+                @keyup.enter="updateUserName"></v-text-field>
             </div>
-            <div v-if="!showChangeUserNameInput" class="userName" @click="onUserNameClick()">{{ userBasicInfo.userName
-              }}
+            <div v-if="!changeUsernameForm.showChangeUserNameInput" class="userName" @click="onUserNameClick()"
+              :key="usernameKey">{{
+    userBasicInfo.userName
+  }}
             </div>
           </div>
           <div class="userOtherInfoContainer">
-            <span class="userOtherInfo" style="margin-left: 0;"><i class="iconfont icon-xihuan" style="color:red;"></i>
-              点赞量: {{
-              userBasicInfo.totalLikes }}</span>
-            <span class="userOtherInfo"><i class="iconfont icon-guankan" style="color:green;"></i> 阅读量: {{
-              userBasicInfo.totalViews }}</span>
             <span class="userOtherInfo" style="margin-right: 0;"><i class="iconfont icon-boke" style="color:blue;"></i>
               博客数量: {{
-              userBasicInfo.totalBlogs }}</span>
+      userBasicInfo.totalBlogs }}</span>
+            <span class="userOtherInfo" style="margin-right: 0;"><i class="iconfont icon-xihuan" style="color:red;"></i>
+              点赞量: {{
+    userBasicInfo.totalLikes }}</span>
+            <span class="userOtherInfo" style="margin-right: 0;"><i class="iconfont icon-guankan"
+                style="color:green;"></i> 阅读量: {{
+    userBasicInfo.totalViews }}</span>
           </div>
         </div>
 
@@ -136,24 +143,53 @@
       <v-btn @click="showChangePasswordDialog = false">取消</v-btn>
     </v-card>
   </v-dialog>
+
+  <v-snackbar v-model="snackbarInfo.showSuccessSnackBar" :timeout="2000" location="top" color="green-accent-4">
+    <div style="justify-content: center; display: flex; align-items: center;color: #fff;">
+      {{ snackbarInfo.successMsg }}
+    </div>
+  </v-snackbar>
+
+  <v-snackbar v-model="snackbarInfo.showErrorSnackBar" :timeout="2000" location="top" color="red-accent-4">
+    <div style="justify-content: center; display: flex; align-items: center; color: #fff;">
+      {{snackbarInfo.errorMsg}}
+    </div>
+  </v-snackbar>
+
   <BackTop></BackTop>
 </template>
 
 <script setup lang='js'>
 import { ref, reactive, onMounted } from 'vue'
 import * as echarts from 'echarts';
+import axios from 'axios'
 import { useRouter } from 'vue-router'
-import { useLoginStore, useRuleStore } from '@/store/store'
+import { useLoginStore } from '@/store/LoginStore'
+import { useRuleStore } from '@/store/RuleStore'
+import { useUserStore } from '@/store/UserStore'
 import BackTop from '../components/BackTop.vue';
+import Loading from '../components/Loading.vue';
 
 const loginStore = useLoginStore()
 const ruleStore = useRuleStore()
+const userStore = useUserStore()
 const router = useRouter()
+
+const isGetData = ref(false)
+
+const usernameKey = ref(0)
 
 let calendarData = {
   startDate: null,
   endDate: null,
 }
+
+const snackbarInfo = ref({
+  showSuccessSnackBar: false,
+  showErrorSnackBar: false,
+  successMsg: '',
+  errorMsg: '',
+})
 
 const changePasswordForm = ref({
   oldPassword: '',
@@ -164,21 +200,25 @@ const changePasswordForm = ref({
   showPassword2: false,
 })
 
+const changeUsernameForm = ref({
+  newUsername: '',
+  showChangeUserNameInput: false,
+})
+
 const formCompleted = ref(false)
-const showChangeUserNameInput = ref(false)
 
 const fileInput = ref(null)
 const showLogoutDialog = ref(false)
 const showChangePasswordDialog = ref(false)
 
-const userBasicInfo = {
-  userName: 'user',
-  email: 'mail@mail.com',
-  avatar: ref('../../public/default.jpg'),
-  totalLikes: 1000,
-  totalViews: 10000,
-  totalBlogs: 100,
-}
+const userBasicInfo = ref({
+  userName: "",
+  email: "",
+  avatar: 'http://8.134.215.31:2002/avatar/default.jpg',
+  totalLikes: 0,
+  totalViews: 0,
+  totalBlogs: 0,
+})
 
 const userBlogCnt = [
   {
@@ -333,7 +373,37 @@ const changePassword = () => {
   if (!formCompleted.value) {
     return;
   }
-  console.log(changePasswordForm.value);
+  axios.request({
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: 'http://8.134.215.31:2002/user/change_password',
+    headers: {
+      'token': localStorage.getItem("JWT_TOKEN"),
+      'Content-Type': 'application/json'
+    },
+    data: {
+      "uid": userStore.getUid().value,
+      "oldPassword": changePasswordForm.value.oldPassword,
+      "newPassword": changePasswordForm.value.password1
+    }
+  })
+    .then((response) => {
+      if (response.data.code === 1) {
+        snackbarInfo.value.showSuccessSnackBar = true
+        snackbarInfo.value.successMsg = response.data.msg
+
+        changePasswordForm.value.oldPassword = ''
+        changePasswordForm.value.password1 = ''
+        changePasswordForm.value.password2 = ''
+      } else {
+        snackbarInfo.value.showErrorSnackBar = true
+        snackbarInfo.value.errorMsg = response.data.msg
+      }
+      showChangePasswordDialog.value = false
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 const getVirtualData = () => {
@@ -365,7 +435,7 @@ const logout = () => {
   router.push('/HQBlog/home')
 }
 
-const getDate = () => {
+const getHeatMapDate = () => {
   let currentDate = new Date();
   let year = currentDate.getFullYear();
   let month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
@@ -382,20 +452,47 @@ const onBlogTitleClick = (blogId) => {
 }
 
 const updateUserName = (event) => {
-  userBasicInfo.userName = event.target.value
-  showChangeUserNameInput.value = false
-  document.getElementById('userNameInputContainer').style.display = 'none';
+  axios.request({
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: 'http://8.134.215.31:2002/user/change_username?',
+    headers: {
+      'token': localStorage.getItem("JWT_TOKEN"),
+      'Content-Type': 'application/json'
+    },
+    data: {
+      "uid": userStore.getUid().value,
+      "username": changeUsernameForm.value.newUsername,
+    }
+  })
+    .then((response) => {
+      if (response.data.code === 1) {
+        snackbarInfo.value.showSuccessSnackBar = true
+        snackbarInfo.value.successMsg = response.data.msg
+
+        userBasicInfo.userName = changeUsernameForm.value.newUsername;
+        usernameKey.value++;
+        changeUsernameForm.value.showChangeUserNameInput = false
+        document.getElementById('userNameInputContainer').style.display = 'none';
+      } else {
+        snackbarInfo.value.showErrorSnackBar = true
+        snackbarInfo.value.errorMsg = response.data.msg
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 const onUserNameClick = () => {
-  showChangeUserNameInput.value = true;
+  changeUsernameForm.value.showChangeUserNameInput = true;
   const userNameInputContainer = document.getElementById('userNameInputContainer');
   userNameInputContainer.style.display = 'block';
   const userNameInput = document.getElementById('userNameInput');
   console.log(userNameInput);
   userNameInput.focus();
   userNameInput.addEventListener('blur', () => {
-    showChangeUserNameInput.value = false
+    changeUsernameForm.value.showChangeUserNameInput = false
     userNameInputContainer.style.display = 'none';
   })
 }
@@ -427,11 +524,45 @@ const handleFileChange = (event) => {
   }
 }
 
-onMounted(() => {
-  getDate();
+const initHeatmap = () => {
+  getHeatMapDate();
   var chartDom = document.getElementById('heatmapContainer');
   var myChart = echarts.init(chartDom);
   option && myChart.setOption(option);
+}
+
+const getUserInfoData = () => {
+  console.log('http://8.134.215.31:2002/user/get_info?uid=' + userStore.getUid().value);
+  axios.request({
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: 'http://8.134.215.31:2002/user/get_info?uid=' + userStore.getUid().value,
+    headers: {
+      "token": localStorage.getItem('JWT_TOKEN')
+    }
+  })
+    .then((response) => {
+      const resData = response.data.data;
+      console.log(resData);
+      userBasicInfo.value.userName = resData.username;
+      userBasicInfo.value.email = resData.email;
+      userBasicInfo.value.avatar = resData.avatar;
+      userBasicInfo.value.totalLikes = resData.likes;
+      userBasicInfo.value.totalViews = resData.views;
+      userBasicInfo.value.totalBlogs = resData.blogs;
+      changeUsernameForm.value.newUsername = resData.username;
+
+      isGetData.value = true;
+      console.log(isGetData);
+      initHeatmap()
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+onMounted(() => {
+  getUserInfoData()
 })
 
 </script>

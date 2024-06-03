@@ -62,8 +62,9 @@
 <script setup lang='js'>
 import { ref, reactive, nextTick, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useLoginStore, useSearchStore } from '@/store/store';
 import { useRouter } from 'vue-router';
+import { useLoginStore } from '@/store/LoginStore'
+import { useSearchStore } from '@/store/SearchStore'
 
 const router = useRouter()
 

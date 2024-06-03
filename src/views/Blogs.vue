@@ -46,7 +46,28 @@
       <div id="heatmap" class="heatmap"></div>
     </div>
     <div class="rankContainer boxshadow">
-      <div class="rank"></div>
+      <div class="rankTitle">推荐作者</div>
+      <div class="rank" v-for="rankInfo in ranksInfo">
+        <v-divider></v-divider>
+        <div class="rankUsername">{{ rankInfo.username }}</div>
+        <div class="rankInfosContainer">
+          <div class="countContainer">
+            <div>{{ rankInfo.count }}</div>
+            &nbsp;
+            <i class="iconfont icon-boke" style="color:wheat;"></i>
+          </div>
+          <div class="watchContainer">
+            <div>{{ rankInfo.watchs }}</div>
+            &nbsp;
+            <i class="iconfont icon-guankan" style="color:wheat;"></i>
+          </div>
+          <div class="likeContainer">
+            <div>{{ rankInfo.likes }}</div>
+            &nbsp;
+            <i class="iconfont icon-xihuan" style="color:red;"></i>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <BackTop></BackTop>
@@ -57,7 +78,7 @@ import BackTop from '../components/BackTop.vue';
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { useLoginStore } from '@/store/store';
+import { useLoginStore } from '@/store/LoginStore';
 import * as echarts from 'echarts';
 
 const router = useRouter()
@@ -72,6 +93,37 @@ let calendarData = {
   endDate: null,
   monthBlogCnt: 10,
 }
+
+const ranksInfo = [
+  {
+    "username": "shywind",
+    "uid": 1,
+    "count": 12,
+    "watchs": 1200,
+    "likes": 112,
+  },
+  {
+    "username": "guxue",
+    "uid": 1,
+    "count": 12,
+    "watchs": 900,
+    "likes": 81
+  },
+  {
+    "username": "ameng",
+    "uid": 1,
+    "count": 12,
+    "watchs": 567,
+    "likes": 24
+  },
+  {
+    "username": "amengguxuejimmykyo",
+    "uid": 1,
+    "count": 12,
+    "watchs": 14,
+    "likes": 8
+  }
+]
 
 const blogs = [
   {
@@ -325,7 +377,8 @@ onMounted(() => {
 }
 
 .heatmapContainer {
-  height: 38vh;
+  width: 20vw;
+  height: 40vh;
   margin: 20px;
   border-radius: 5px;
   background-color: var(--dark-background);
@@ -339,7 +392,65 @@ onMounted(() => {
 .rankContainer {
   margin: 20px;
   width: 100%;
-  height: 50vh;
-  background-color: #aca;
+  /* height: 50vh; */
+  background-color: var(--dark-background);
+  color: var(--light-background);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.rankTitle {
+  font-size: 25px;
+  font-weight: bold;
+  border-bottom: 3px solid var(--primary-color);
+}
+
+.rank {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 10px;
+  margin-left: 0;
+  font-size: 20px;
+  border-bottom: 2px solid white;
+  padding: 3px;
+}
+
+.rankUsername:hover {
+  color: var(--primary-color);
+}
+
+.rankInfosContainer {
+  font-size: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.countContainer {
+  margin: 0 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.watchContainer {
+  margin: 0 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.likeContainer {
+  margin: 0 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

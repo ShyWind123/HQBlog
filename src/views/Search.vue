@@ -6,11 +6,11 @@
   </div>
 </template>
 
-<script setup lang='ts'>
+<script setup lang='js'>
 import { ref, reactive, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import { useSearchStore } from '../store/store';
+import { useSearchStore } from '@/store/SearchStore'
 
 const searchStore = useSearchStore()
 const { searchText } = storeToRefs(searchStore)

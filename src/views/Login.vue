@@ -108,9 +108,12 @@
 import { ref, reactive, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router';
-import { useLoginStore, useRuleStore } from '@/store/store'
+import { useLoginStore } from '@/store/LoginStore'
+import { useRuleStore } from '@/store/RuleStore'
+import { useUserStore } from '@/store/UserStore'
 const loginStore = useLoginStore()
 const ruleStore = useRuleStore()
+const userStore = useUserStore()
 const router = useRouter();
 const form = [ref(false), ref(false), ref(false)]
 const showSnackBar = ref(false)
@@ -186,10 +189,7 @@ const loginByPassword = () => {
     }
   })
     .then((response) => {
-      setJWTandCookie("JWT_TOKEN", response.data.data.jwt)
-      loginStore.login();
-      loginStore.setIsNowLogin(true)
-      router.push('/HQBlog/home')
+      afterLogin(response.data.data)
     })
     .catch((error) => {
       console.log(error);
@@ -257,10 +257,7 @@ const loginCodeSubmit = () => {
     }
   })
     .then((response) => {
-      setJWTandCookie("JWT_TOKEN", response.data.data.jwt)
-      loginStore.login();
-      loginStore.setIsNowLogin(true)
-      router.push('/HQBlog/home')
+      afterLogin(response.data.data)
     })
     .catch((error) => {
       console.log(error);
@@ -284,14 +281,19 @@ const registerCodeSubmit = () => {
     }
   })
     .then((response) => {
-      setJWTandCookie("JWT_TOKEN", response.data.data.jwt)
-      loginStore.login();
-      loginStore.setIsNowLogin(true)
-      router.push('/HQBlog/home')
+      afterLogin(response.data.data)
     })
     .catch((error) => {
       console.log(error);
     });
+}
+
+const afterLogin = (resData) => {
+  setJWTandCookie("JWT_TOKEN", resData.jwt)
+  userStore.setUid(resData.uid)
+  loginStore.login();
+  loginStore.setIsNowLogin(true)
+  router.push('/HQBlog/home')
 }
 
 const changeLoginType = (type) => {
