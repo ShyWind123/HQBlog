@@ -9,6 +9,7 @@
       已退出登录！
     </div>
   </v-snackbar>
+  <loading v-if="isLoading"></loading>
   <div class="blogContainer">
     <div class="allTitleContainer"><span class="allTitle">所有博客</span></div>
     <div v-for="blog in blogs" class="blogCard boxshadow">
@@ -79,14 +80,19 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useLoginStore } from '@/store/LoginStore';
+import { useUserStore } from '@/store/UserStore';
+import Loading from '../components/Loading.vue'
 import * as echarts from 'echarts';
+import axios from 'axios'
 
 const router = useRouter()
 const loginStore = useLoginStore()
+const userStore = useUserStore()
 
 const { isNowLogin, isNowLogout } = storeToRefs(loginStore)
 
 const heatmapRef = ref()
+const isLoading = ref(true)
 
 let calendarData = {
   startDate: null,
@@ -164,7 +170,7 @@ const option = {
   title: {
     top: 20,
     left: 'center',
-    text: '本月共发表博客' + calendarData.monthBlogCnt + '篇',
+    text: '',
     textStyle: {
       color: '#fff'
     }
@@ -181,7 +187,7 @@ const option = {
   },
   visualMap: {
     show: false,
-    max: 10,
+    max: 0,
     min: 0,
     orient: 'horizontal',
     left: 'center',
@@ -220,12 +226,14 @@ const onBlogTitleClick = (blogId) => {
   router.push({ name: 'blogDetail', params: { id: blogId } })
 }
 
-const initHeatmap = () => {
+const initHeatmap = async () => {
   getDate()
+  await getHeatMapOriginData();
   let chartDom = document.getElementById('heatmap');
   let myChart = echarts.init(chartDom);
   option && myChart.setOption(option);
 
+  isLoading.value = false;
 }
 
 const getDate = () => {
@@ -238,21 +246,28 @@ const getDate = () => {
   calendarData.endDate = year + '-' + month + '-' + day
 
   option.calendar.range = [year + '-' + month];
-  option.series.data = getVirtualData();
 }
 
-const getVirtualData = () => {
-  const start = +echarts.time.parse(calendarData.startDate);
-  const end = +echarts.time.parse(calendarData.endDate);
-  const dayTime = 3600 * 24 * 1000;
-  const data = [];
-  for (let time = start; time < end; time += dayTime) {
-    data.push([
-      echarts.time.format(time, '{yyyy}-{MM}-{dd}', false),
-      Math.floor(Math.random() * 10)
-    ]);
-  }
-  return data;
+const getHeatMapOriginData = async () => {
+  await axios.request({
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: 'http://8.134.215.31:2002/user/get_heatmap?uid=' + userStore.getUid().value + '&type=month',
+    headers: {
+      'token': localStorage.getItem('JWT_TOKEN')
+    }
+  })
+    .then((response) => {
+      const userBlogCnt = response.data.data.heatmaps;
+      option.series.data = userBlogCnt.map((item) => {
+        return [item.date, item.cnt];
+      })
+      option.title.text = '本月共发表博客' + response.data.data.totalCnt + '篇'
+      option.visualMap.max = response.data.data.maxCnt;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 onMounted(() => {

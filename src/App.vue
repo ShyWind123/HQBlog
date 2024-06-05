@@ -5,8 +5,13 @@
 </template>
 
 <script setup lang='js'>
-import { ref, reactive } from 'vue'
-import Home from './views/Home.vue';
+import { ref, reactive, onMounted } from 'vue'
+onMounted(() => {
+  window.addEventListener('resize', () => {
+    window.location.reload()
+  })
+})
+
 </script>
 
 <style scoped></style>

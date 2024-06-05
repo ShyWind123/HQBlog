@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import '@/style/style.css'
 import 'animate.css';
+import 'vditor/dist/index.css';
 
 import App from '@/App.vue'
 import router from '@/router/router';

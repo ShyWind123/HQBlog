@@ -21,8 +21,7 @@
                 label="修改用户名" :placeholder="userBasicInfo.userName" variant="outlined"
                 @keyup.enter="updateUserName"></v-text-field>
             </div>
-            <div v-if="!changeUsernameForm.showChangeUserNameInput" class="userName" @click="onUserNameClick()"
-              :key="usernameKey">{{
+            <div v-if="!changeUsernameForm.showChangeUserNameInput" class="userName" @click="onUserNameClick()">{{
     userBasicInfo.userName
   }}
             </div>
@@ -88,7 +87,7 @@
         <v-responsive class="overflow-y-auto">
           <v-chip-group class="mt-3" column>
             <v-chip v-for="tag in userTagsList" label style="color: var(--light-background);">
-              {{ tag }}
+              {{ tag.name }}
             </v-chip>
           </v-chip-group>
         </v-responsive>
@@ -144,18 +143,12 @@
     </v-card>
   </v-dialog>
 
-  <v-snackbar v-model="snackbarInfo.showSuccessSnackBar" :timeout="2000" location="top" color="green-accent-4">
+  <v-snackbar v-model="snackbarInfo.show" :timeout="2000" location="top"
+    :color="snackbarInfo.success ? 'green-accent-4' :'red-accent-4'">
     <div style="justify-content: center; display: flex; align-items: center;color: #fff;">
-      {{ snackbarInfo.successMsg }}
+      {{ snackbarInfo.msg }}
     </div>
   </v-snackbar>
-
-  <v-snackbar v-model="snackbarInfo.showErrorSnackBar" :timeout="2000" location="top" color="red-accent-4">
-    <div style="justify-content: center; display: flex; align-items: center; color: #fff;">
-      {{snackbarInfo.errorMsg}}
-    </div>
-  </v-snackbar>
-
   <BackTop></BackTop>
 </template>
 
@@ -177,18 +170,15 @@ const router = useRouter()
 
 const isGetData = ref(false)
 
-const usernameKey = ref(0)
-
 let calendarData = {
   startDate: null,
   endDate: null,
 }
 
 const snackbarInfo = ref({
-  showSuccessSnackBar: false,
-  showErrorSnackBar: false,
-  successMsg: '',
-  errorMsg: '',
+  show: false,
+  success: false,
+  msg: '',
 })
 
 const changePasswordForm = ref({
@@ -220,43 +210,9 @@ const userBasicInfo = ref({
   totalBlogs: 0,
 })
 
-const userBlogCnt = [
-  {
-    date: '2024-01-01',
-    cnt: 4
-  },
-  {
-    date: '2024-02-02',
-    cnt: 3
-  },
-  {
-    date: '2024-03-03',
-    cnt: 2
-  },
-  {
-    date: '2024-04-04',
-    cnt: 1
-  },
-  {
-    date: '2024-05-05',
-    cnt: 10
-  }
-]
-const blogCnt = 100;
-
-const userTagsList = [
-  "Python",
-  "Java",
-  "JavaScript",
-  "Vue",
-  "React",
-  "Node.js",
-  "TypeScript",
-  "MySQL",
-  "MongoDB",
-  "Redis",
-  "GraphQL"
-]
+let blogCnt = 0;
+let userBlogCnt = []
+const userTagsList = ref()
 
 const userBlogList = [
   {
@@ -297,7 +253,7 @@ const option = {
   title: {
     top: 10,
     left: 'center',
-    text: '过去一年共发表博客' + blogCnt + '篇',
+    text: '',
     textStyle: {
       color: '#fff'
     }
@@ -331,7 +287,7 @@ const option = {
   visualMap: {
     show: false,
     top: 60,
-    max: 10,
+    max: 0,
     min: 0,
     orient: 'horizontal',
     type: 'piecewise',
@@ -389,33 +345,28 @@ const changePassword = () => {
   })
     .then((response) => {
       if (response.data.code === 1) {
-        snackbarInfo.value.showSuccessSnackBar = true
-        snackbarInfo.value.successMsg = response.data.msg
+        snackbarInfo.value.success = true
 
         changePasswordForm.value.oldPassword = ''
         changePasswordForm.value.password1 = ''
         changePasswordForm.value.password2 = ''
+
+        showChangePasswordDialog.value = false
       } else {
-        snackbarInfo.value.showErrorSnackBar = true
-        snackbarInfo.value.errorMsg = response.data.msg
+        snackbarInfo.value.success = false
       }
-      showChangePasswordDialog.value = false
+      snackbarInfo.value.msg = response.data.msg
+      snackbarInfo.value.show = true
     })
     .catch((error) => {
       console.log(error);
     });
 }
 
-const getVirtualData = () => {
-  const start = +echarts.time.parse(calendarData.startDate);
-  const end = +echarts.time.parse(calendarData.endDate);
-  const dayTime = 3600 * 24 * 1000;
+const getDataFromOriginData = () => {
   const data = [];
-  for (let time = start; time < end; time += dayTime) {
-    data.push([
-      echarts.time.format(time, '{yyyy}-{MM}-{dd}', false),
-      Math.floor(Math.random() * 10)
-    ]);
+  for (let i = 0; i < userBlogCnt.length; i++) {
+    data.push([userBlogCnt[i].date, userBlogCnt[i].cnt])
   }
   return data;
 }
@@ -435,6 +386,14 @@ const logout = () => {
   router.push('/HQBlog/home')
 }
 
+const initHeatmap = () => {
+  getHeatMapDate();
+  option.series.data = getDataFromOriginData();
+  var chartDom = document.getElementById('heatmapContainer');
+  var myChart = echarts.init(chartDom);
+  option && myChart.setOption(option);
+}
+
 const getHeatMapDate = () => {
   let currentDate = new Date();
   let year = currentDate.getFullYear();
@@ -444,7 +403,6 @@ const getHeatMapDate = () => {
   calendarData.endDate = year + '-' + month + '-' + day
 
   option.calendar.range = [calendarData.startDate, calendarData.endDate];
-  option.series.data = getVirtualData();
 }
 
 const onBlogTitleClick = (blogId) => {
@@ -467,17 +425,16 @@ const updateUserName = (event) => {
   })
     .then((response) => {
       if (response.data.code === 1) {
-        snackbarInfo.value.showSuccessSnackBar = true
-        snackbarInfo.value.successMsg = response.data.msg
+        snackbarInfo.value.success = true
 
-        userBasicInfo.userName = changeUsernameForm.value.newUsername;
-        usernameKey.value++;
+        userBasicInfo.value.userName = changeUsernameForm.value.newUsername;
         changeUsernameForm.value.showChangeUserNameInput = false
         document.getElementById('userNameInputContainer').style.display = 'none';
       } else {
-        snackbarInfo.value.showErrorSnackBar = true
-        snackbarInfo.value.errorMsg = response.data.msg
+        snackbarInfo.value.success = false
       }
+      snackbarInfo.value.msg = response.data.msg
+      snackbarInfo.value.show = true
     })
     .catch((error) => {
       console.log(error);
@@ -489,7 +446,7 @@ const onUserNameClick = () => {
   const userNameInputContainer = document.getElementById('userNameInputContainer');
   userNameInputContainer.style.display = 'block';
   const userNameInput = document.getElementById('userNameInput');
-  console.log(userNameInput);
+
   userNameInput.focus();
   userNameInput.addEventListener('blur', () => {
     changeUsernameForm.value.showChangeUserNameInput = false
@@ -506,34 +463,42 @@ const handleFileChange = (event) => {
   const file = event.target.files[0];
   if (file) {
     const formData = new FormData();
-    formData.append('avatar', file.value);
+    formData.append('uid', '1');
+    formData.append('avatar', file);
 
-    // 发送formData到后端服务器
-    // axios.post('/upload', formData, {
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data'
-    //   }
-    // }).then(response => {
-    //   // 处理服务器返回的响应
-    // }).catch(error => {
-    //   // 处理错误
-    // });
+    axios.request({
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: 'http://8.134.215.31:2002/user/change_avatar',
+      headers: {
+        "Content-Type": "multipart/form-data",
+        'token': localStorage.getItem("JWT_TOKEN")
+      },
+      data: formData
+    })
+      .then((response) => {
+        if (response.data.code === 1) {
+          userBasicInfo.value.avatar = response.data.data
+          router.go(0)
+
+          snackbarInfo.value.success = true
+        } else {
+          snackbarInfo.value.success = false
+        }
+        snackbarInfo.value.msg = response.data.msg
+        snackbarInfo.value.show = true
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   } else {
     // 提示用户选择文件
     alert('请选择要上传的文件');
   }
 }
 
-const initHeatmap = () => {
-  getHeatMapDate();
-  var chartDom = document.getElementById('heatmapContainer');
-  var myChart = echarts.init(chartDom);
-  option && myChart.setOption(option);
-}
-
-const getUserInfoData = () => {
-  console.log('http://8.134.215.31:2002/user/get_info?uid=' + userStore.getUid().value);
-  axios.request({
+const getUserInfoData = async () => {
+  await axios.request({
     method: 'get',
     maxBodyLength: Infinity,
     url: 'http://8.134.215.31:2002/user/get_info?uid=' + userStore.getUid().value,
@@ -543,7 +508,7 @@ const getUserInfoData = () => {
   })
     .then((response) => {
       const resData = response.data.data;
-      console.log(resData);
+
       userBasicInfo.value.userName = resData.username;
       userBasicInfo.value.email = resData.email;
       userBasicInfo.value.avatar = resData.avatar;
@@ -551,18 +516,55 @@ const getUserInfoData = () => {
       userBasicInfo.value.totalViews = resData.views;
       userBasicInfo.value.totalBlogs = resData.blogs;
       changeUsernameForm.value.newUsername = resData.username;
-
-      isGetData.value = true;
-      console.log(isGetData);
-      initHeatmap()
     })
     .catch((error) => {
       console.log(error);
     });
 }
 
-onMounted(() => {
-  getUserInfoData()
+const getUserTags = async () => {
+  await axios.request({
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: 'http://8.134.215.31:2002/user/get_tags?uid=' + userStore.getUid().value,
+    headers: {
+      'token': localStorage.getItem('JWT_TOKEN')
+    }
+  })
+    .then((response) => {
+      userTagsList.value = response.data.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+const getHeatMapOriginData = async () => {
+  await axios.request({
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: 'http://8.134.215.31:2002/user/get_heatmap?uid=' + userStore.getUid().value + '&type=year',
+    headers: {
+      'token': localStorage.getItem('JWT_TOKEN')
+    }
+  })
+    .then((response) => {
+      userBlogCnt = response.data.data.heatmaps;
+      option.title.text = '过去一年共发表博客' + response.data.data.totalCnt + '篇'
+      option.visualMap.max = response.data.data.maxCnt;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+onMounted(async () => {
+  await getUserInfoData()
+  await getUserTags()
+  await getHeatMapOriginData()
+
+  isGetData.value = true;
+  initHeatmap()
 })
 
 </script>
