@@ -1,48 +1,183 @@
 <template>
+  <v-snackbar v-model="snackBar.show" :timeout="2000" location="top" :color="snackBar.color">
+    <div style="justify-content: center; display: flex; align-items: center; color:aliceblue; font-size: 16px;">
+      {{ snackBar.msg }}
+    </div>
+  </v-snackbar>
   <div class="createContainer">
     <div class="settingContainner">
       <div class="infoContainer">
         <div class="titleSumContainer">
           <div class="titleContainer">
-            <v-text-field label="标题" placeholder="请输入标题" variant="outlined" density="comfortable"></v-text-field>
+            <v-text-field v-model="blogStore.title" label="标题" placeholder="请输入标题" variant="outlined"
+              density="comfortable"></v-text-field>
           </div>
           <div class="summaryContainer">
-            <v-textarea label="概要" placeholder="请输入概要" variant="outlined" no-resize></v-textarea>
+            <v-textarea v-model="blogStore.summary" label="概要" placeholder="请输入概要" variant="outlined" no-resize>
+              <template v-slot:append-inner>
+                <i class="iconfont icon-yijianshengcheng generateSummaryBtn" @click="generateSummary">一键生成</i>
+              </template>
+            </v-textarea>
           </div>
         </div>
-        <div class="tagsContainer">
-          <div class="tagsTitleContainer">
-            <div class="tagsTitle">标签</div>
-            <v-btn>一键生成</v-btn>
-            <v-btn>添加标签</v-btn>
-          </div>
-          <v-chip-group column>
-            <v-chip text="Elevator" variant="outlined" filter></v-chip>
-            <v-chip text="Washer / Dryer" variant="outlined" filter></v-chip>
-            <v-chip text="Fireplace" variant="outlined" filter></v-chip>
-            <v-chip text="Wheelchair access" variant="outlined" filter></v-chip>
-          </v-chip-group>
+        <div class="optionContainer">
+          <v-btn v-for="opBtn in opBtns" size="large" class="optionBtn" :color="opBtn.color" @click="opBtn.click">
+            <i class="iconfont" :class="opBtn.icon"></i>
+            {{ opBtn.name }}
+          </v-btn>
         </div>
       </div>
-      <div class="optionContainer">
 
+      <div class="tagsContainer boxshadow">
+        <div class="tagsTitleContainer">
+          <div class="tagsTitle">
+            标签
+          </div>
+          <div class="tagsOpContainer">
+            <v-btn variant="text" class="tagsOpBtn" @click="generateTags">一键生成</v-btn>
+            <v-btn variant="text" class="tagsOpBtn" @click="showTagsAddDialog = true">添加标签</v-btn>
+          </div>
+        </div>
+        <v-chip-group column>
+          <v-chip v-for="(tag, index) in blogStore.getTags()" class="chip" :text="tag" closable
+            @click:close="blogStore.deleteTag(index)"></v-chip>
+        </v-chip-group>
       </div>
     </div>
     <div id="vditor"></div>
   </div>
+
+  <v-dialog v-model="showTagsAddDialog" width="auto">
+    <v-card width="400" title="添加标签">
+      <template v-slot:actions>
+        <div
+          style="display: flex;flex-direction: column;; justify-content: space-between; align-items: center;width: 100%;">
+          <v-text-field width="300" label="标签" placeholder="请输入标签" v-model="newTag"></v-text-field>
+          <v-btn @click="addTag">添加</v-btn>
+        </div>
+      </template>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup lang='ts'>
 import { ref, reactive, onMounted } from 'vue'
 import Vditor from 'vditor';
+import { useBlogStore } from '../store/BlogStore';
+import { useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
+import { number } from 'echarts';
+
+const router = useRouter();
+const route = useRoute();
+
+const blogStore = useBlogStore();
 
 const vditor = ref<Vditor | null>(null);
 
-onMounted(() => {
+const showTagsAddDialog = ref(false)
+
+const newTag = ref("")
+
+const snackBar = ref({
+  show: false,
+  msg: '',
+  color: ''
+})
+
+const canRelease = () => {
+  if (blogStore.getTitle() === "") {
+    snackBar.value.msg = "标题不能为空"
+  } else if (blogStore.getSummary() === "") {
+    snackBar.value.msg = "概要不能为空"
+  } else if (blogStore.getTags().length === 0) {
+    snackBar.value.msg = "标签不能为空"
+  } else if (blogStore.getContent() === "") {
+    snackBar.value.msg = "内容不能为空"
+  } else {
+    return true
+  }
+  snackBar.value.show = true
+  snackBar.value.color = "red-accent-4"
+  return false
+}
+
+const clickRelease = async () => {
+  blogStore.setContent(vditor.value.getValue());
+  if (canRelease()) {
+    const res = await blogStore.saveBlog("发布")
+    showAfterSaveSnackBar(res)
+  }
+}
+const clickSaveDraft = async () => {
+  blogStore.setContent(vditor.value.getValue());
+  const res = await blogStore.saveBlog("草稿")
+  showAfterSaveSnackBar(res)
+}
+const showAfterSaveSnackBar = (res: string) => {
+  console.log(res);
+  snackBar.value.msg = res;
+  if (snackBar.value.msg.slice(0, 5) === "error") {
+    snackBar.value.color = "red-accent-4"
+  } else {
+    snackBar.value.color = "green-accent-4"
+  }
+  snackBar.value.show = true
+}
+
+
+const clickDelete = () => {
+
+}
+
+const generateSummary = () => {
+
+}
+
+const generateTags = () => {
+
+}
+const addTag = () => {
+  if (newTag.value === "") {
+    return
+  }
+  blogStore.addTag(newTag.value)
+  showTagsAddDialog.value = false
+  newTag.value = ""
+}
+
+const opBtns = [
+  {
+    "name": "发布",
+    "icon": "icon-fabu",
+    "color": "#fff",
+    "click": clickRelease
+  },
+  {
+    "name": "存为草稿",
+    "icon": "icon-caogaoxiang",
+    "color": "#fff",
+    "click": clickSaveDraft
+  },
+  {
+    "name": "删除",
+    "icon": "icon-shanchu",
+    "color": "#e90000",
+    "click": clickDelete
+  }
+]
+
+
+onMounted(async () => {
+  blogStore.clear();
+  await blogStore.init(route.params.id)
+  router.push({ name: "create", params: { id: blogStore.getBlogId() } })
+
   vditor.value = new Vditor('vditor', {
     "mode": "ir",
     "icon": "material",
-    "minHeight": 600,
+    "minHeight": 800,
+    "width": "70%",
     "counter": {
       "enable": true
     },
@@ -52,6 +187,7 @@ onMounted(() => {
     },
     // "width": screen.width * 0.96,
     after: () => {
+      vditor.value.setValue(blogStore.getContent())
       vditor.value.setTheme('dark', 'dark')
     }
   });
@@ -63,7 +199,12 @@ onMounted(() => {
   /* background-color: var(--primary-color); */
   height: auto;
   overflow: auto;
-  margin: 30px 0;
+  width: auto;
+  margin: 50px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .settingContainner {
@@ -72,20 +213,22 @@ onMounted(() => {
   /* background-color: #ada; */
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  width: 70vw;
 }
 
 .infoContainer {
-  width: 60vw;
+  width: 70%;
   height: auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 10px;
+  margin: 0 10px;
 }
 
 .titleSumContainer {
-  width: 80%;
+  width: 100%;
   height: auto;
   display: flex;
   flex-direction: column;
@@ -103,17 +246,77 @@ onMounted(() => {
   height: auto;
 }
 
+.generateSummaryBtn {
+  font-size: 15px;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.generateSummaryBtn:hover {
+  background-color: #ddd;
+  cursor: pointer
+}
+
 .tagsContainer {
-  width: 20%;
-  height: auto;
-  border: 2px solid #ccc;
+  width: 30%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  /* border: 2px solid #ccc; */
+  background-color: var(--dark-background);
   border-radius: 5px;
   padding: 10px;
+  margin: 10px;
+}
+
+.tagsTitleContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.tagsTitle {
+  font-size: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+  font-weight: bold;
+  color: aliceblue;
+}
+
+.tagsOpContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tagsOpBtn {
+  color: gold;
+}
+
+.tagsOpBtn:hover {
+  color: yellow;
+}
+
+.chip {
+  background-color: #fff;
+  color: #000;
 }
 
 .optionContainer {
-  width: 15vw;
+  width: 100%;
   height: auto;
-  margin: 10px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.optionBtn {
+  margin-right: 20px;
 }
 </style>

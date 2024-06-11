@@ -338,7 +338,7 @@ const changePassword = () => {
       'Content-Type': 'application/json'
     },
     data: {
-      "uid": userStore.getUid().value,
+      "uid": userStore.getUid(),
       "oldPassword": changePasswordForm.value.oldPassword,
       "newPassword": changePasswordForm.value.password1
     }
@@ -419,7 +419,7 @@ const updateUserName = (event) => {
       'Content-Type': 'application/json'
     },
     data: {
-      "uid": userStore.getUid().value,
+      "uid": userStore.getUid(),
       "username": changeUsernameForm.value.newUsername,
     }
   })
@@ -501,7 +501,7 @@ const getUserInfoData = async () => {
   await axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/user/get_info?uid=' + userStore.getUid().value,
+    url: 'http://8.134.215.31:2002/user/get_info?uid=' + userStore.getUid(),
     headers: {
       "token": localStorage.getItem('JWT_TOKEN')
     }
@@ -526,7 +526,7 @@ const getUserTags = async () => {
   await axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/user/get_tags?uid=' + userStore.getUid().value,
+    url: 'http://8.134.215.31:2002/user/get_tags?uid=' + userStore.getUid(),
     headers: {
       'token': localStorage.getItem('JWT_TOKEN')
     }
@@ -543,7 +543,7 @@ const getHeatMapOriginData = async () => {
   await axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/user/get_heatmap?uid=' + userStore.getUid().value + '&type=year',
+    url: 'http://8.134.215.31:2002/user/get_heatmap?uid=' + userStore.getUid() + '&type=year',
     headers: {
       'token': localStorage.getItem('JWT_TOKEN')
     }

@@ -62,17 +62,17 @@ const routerConfig = {
         },
         {
           name:'blogDetail',
-          path:'blogDetail/:id',
+          path:'blogDetail',
           component: BlogDetail
         },
         {
           name:'edit',
-          path:'edit/:id',
+          path:'edit',
           component: Edit
         },
         {
           name:'create',
-          path:'create',
+          path:'create/:id',
           component: Create
         }
       ]

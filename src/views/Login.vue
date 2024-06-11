@@ -16,7 +16,7 @@
         <v-form v-if="loginType == 0" v-model="form[0]" @submit.prevent="onSubmit"
           style="display: flex; flex-direction: column;justify-content: center;align-items: center;">
           <v-text-field v-model="passwordForm.email" :rules="[ruleStore.emptyRule('邮箱', passwordForm.email)]"
-            variant="outlined" :readonly="loading" label="邮箱" placeholder="请输入邮箱 bg-color=" #212121" color="#fff"
+            variant="outlined" :readonly="loading" label="邮箱" placeholder="请输入邮箱" bg-color="#212121" color="#fff"
             class="inputBox" spellcheck="false" clearable></v-text-field>
           <v-text-field v-model="passwordForm.password" :rules="[ruleStore.emptyRule('密码', passwordForm.password)]"
             variant="outlined" :readonly="loading" label="密码" placeholder="请输入密码" bg-color="#212121" color="#fff"

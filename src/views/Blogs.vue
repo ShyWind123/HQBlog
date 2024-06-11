@@ -252,7 +252,7 @@ const getHeatMapOriginData = async () => {
   await axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/user/get_heatmap?uid=' + userStore.getUid().value + '&type=month',
+    url: 'http://8.134.215.31:2002/user/get_heatmap?uid=' + userStore.getUid() + '&type=month',
     headers: {
       'token': localStorage.getItem('JWT_TOKEN')
     }
@@ -273,6 +273,8 @@ const getHeatMapOriginData = async () => {
 onMounted(() => {
   if (loginStore.getIsLogin()) {
     initHeatmap()
+  } else {
+    isLoading.value = false;
   }
 });
 </script>

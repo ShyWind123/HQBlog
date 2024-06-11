@@ -9,11 +9,11 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const getUid = () => {
-    return uid;
+    return uid.value;
   }
 
   return {
-    uid, setUid, getUid
+    uid, setUid, getUid,
   }
 },{
   persist: true,

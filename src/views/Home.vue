@@ -65,6 +65,8 @@ import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import { useLoginStore } from '@/store/LoginStore'
 import { useSearchStore } from '@/store/SearchStore'
+import { useUserStore } from '@/store/UserStore'
+import { useBlogStore } from '@/store/BlogStore'
 
 const router = useRouter()
 
@@ -73,6 +75,9 @@ const { isLogin } = storeToRefs(loginStore)
 
 const searchStore = useSearchStore()
 const { search } = searchStore
+
+const userStore = useUserStore()
+const blogStore = useBlogStore()
 
 const searchBtn = ref(0)
 const searchBox = ref(0)
@@ -91,7 +96,7 @@ const gotoLinks = [
   },
   {
     name: '写博客',
-    path: '/HQBlog/create',
+    path: '/HQBlog/create/0',
     icon: 'icon-chuangjian'
   },
   {
@@ -172,6 +177,7 @@ const checkCookie = () => {
     routerViewKey.value++
   }
 }
+
 
 onMounted(() => {
   checkCookie()
