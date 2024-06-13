@@ -70,7 +70,7 @@ const router = useRouter()
 
 const loading = ref(true)
 
-const blogId = ref < string > ('0')
+const blogId = ref('0')
 
 const catagoryRef = ref()
 

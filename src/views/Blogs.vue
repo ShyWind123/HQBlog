@@ -26,12 +26,13 @@
           <div class="blogDate">
             <i class="iconfont icon-rili"></i>
             <span>发布于: </span>
-            <span>{{ blog.date }}</span>
+            <span>{{ blog.date }}</span>&nbsp;
+            <span>{{ blog.time }}</span>
           </div>
         </div>
       </div>
 
-      <div class="blogContent">{{ blog.content }}</div>
+      <div class="blogContent">{{ blog.summary }}</div>
 
       <div class="blogTags">
         <i class="iconfont icon-biaoqian"></i>
@@ -131,40 +132,7 @@ const ranksInfo = [
   }
 ]
 
-const blogs = [
-  {
-    "id": 1,
-    "title": "如何用Python爬取网页数据",
-    "author": "shywind",
-    "date": "2022-01-10",
-    "content": "Python爬虫是一种自动化的程序，它可以从互联网上抓取数据并将其存储到本地。本文将介绍如何用Python爬取网页数据，并用BeautifulSoup库解析网页内容。",
-    "tags": ["Python", "爬虫", "BeautifulSoup"],
-  },
-  {
-    "id": 2,
-    "title": "如何用Python爬取网页数据",
-    "author": "shywind",
-    "date": "2022-01-11",
-    "content": "Python爬虫是一种自动化的程序，它可以从互联网上抓取数据并将其存储到本地。本文将介绍如何用Python爬取网页数据，并用BeautifulSoup库解析网页内容。",
-    "tags": ["Python", "爬虫", "BeautifulSoup"],
-  },
-  {
-    "id": 3,
-    "title": "如何用Python爬取网页数据",
-    "author": "shywind",
-    "date": "2022-01-11",
-    "content": "Python爬虫是一种自动化的程序，它可以从互联网上抓取数据并将其存储到本地。本文将介绍如何用Python爬取网页数据，并用BeautifulSoup库解析网页内容。",
-    "tags": ["Python", "爬虫", "BeautifulSoup"],
-  },
-  {
-    "id": 4,
-    "title": "如何用Python爬取网页数据",
-    "author": "shywind",
-    "date": "2022-01-11",
-    "content": "Python爬虫是一种自动化的程序，它可以从互联网上抓取数据并将其存储到本地。本文将介绍如何用Python爬取网页数据，并用BeautifulSoup库解析网页内容。",
-    "tags": ["Python", "爬虫", "BeautifulSoup"],
-  }
-]
+const blogs = ref([])
 
 const option = {
   title: {
@@ -270,7 +238,25 @@ const getHeatMapOriginData = async () => {
     });
 }
 
-onMounted(() => {
+const getAllBlogs = async () => {
+  axios.request({
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: 'http://8.134.215.31:2002/blog/get_all_blogs',
+    headers: {
+      'token': localStorage.getItem('JWT_TOKEN')
+    }
+  })
+    .then((response) => {
+      blogs.value = response.data.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+}
+
+onMounted(async () => {
+  await getAllBlogs()
   if (loginStore.getIsLogin()) {
     initHeatmap()
   } else {
@@ -320,7 +306,7 @@ onMounted(() => {
   margin: 30px 10px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   font-size: 20px;
 }
@@ -328,9 +314,9 @@ onMounted(() => {
 .blogTitleContainer {
   width: 100%;
   display: flex;
-  margin: 0 30px 10px 30px;
+  margin: 0 30px 10px 0;
   justify-content: flex-start;
-  font-size: 30px;
+  font-size: 35px;
   font-weight: bold;
 }
 
@@ -356,7 +342,7 @@ onMounted(() => {
 }
 
 .blogAuthor {
-  margin: 0 20px;
+  margin: 0 20px 0 5px;
 }
 
 .blogDate {

@@ -62,14 +62,17 @@
           <v-timeline line-color="white" class="timelineContainer" side="end">
             <v-timeline-item dot-color="#e90000" size="lx-smallarge" v-for="blog in userBlogList">
               <template v-slot:opposite>
-                <span style="color: #fff;">{{ blog.date }}</span>
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:8vw;">
+                  <span style="color: #fff;">{{ blog.date }}</span>
+                  <span style="color: #fff;">{{ blog.time }}</span>
+                </div>
               </template>
               <div class="blogCard boxshadow">
-                <div class="blogTitleContainer" @click="onBlogTitleClick(blog.id)">
-                  <span class="blogTitle">{{ blog.title }}</span>
+                <div class="blogTitleContainer">
+                  <span class="blogTitle" @click="onBlogTitleClick(blog.id)">{{ blog.title }}</span>
                 </div>
 
-                <div class="blogContent">{{ blog.content }}</div>
+                <div class="blogSummary">{{ blog.summary }}</div>
 
                 <div class="blogTags">
                   <v-chip-group>
@@ -77,6 +80,7 @@
                   </v-chip-group>
                 </div>
               </div>
+              <span v-if="blog.state == '草稿'" style="color:antiquewhite; margin: 0 20px;">草稿</span>
             </v-timeline-item>
           </v-timeline>
         </div>
@@ -213,41 +217,7 @@ const userBasicInfo = ref({
 let blogCnt = 0;
 let userBlogCnt = []
 const userTagsList = ref()
-
-const userBlogList = [
-  {
-    "id": 1,
-    "title": "如何用Python爬取网页数据",
-    "author": "shywind",
-    "date": "2022-01-10",
-    "content": "Python爬虫是一种自动化的程序，它可以从互联网上抓取数据并将其存储到本地。本文将介绍如何用Python爬取网页数据，并用BeautifulSoup库解析网页内容。",
-    "tags": ["Python", "爬虫", "BeautifulSoup"],
-  },
-  {
-    "id": 2,
-    "title": "如何用Python爬取网页数据",
-    "author": "shywind",
-    "date": "2022-01-11",
-    "content": "Python爬虫是一种自动化的程序，它可以从互联网上抓取数据并将其存储到本地。本文将介绍如何用Python爬取网页数据，并用BeautifulSoup库解析网页内容。",
-    "tags": ["Python", "爬虫", "BeautifulSoup"],
-  },
-  {
-    "id": 3,
-    "title": "如何用Python爬取网页数据",
-    "author": "shywind",
-    "date": "2022-01-11",
-    "content": "Python爬虫是一种自动化的程序，它可以从互联网上抓取数据并将其存储到本地。本文将介绍如何用Python爬取网页数据，并用BeautifulSoup库解析网页内容。",
-    "tags": ["Python", "爬虫", "BeautifulSoup"],
-  },
-  {
-    "id": 4,
-    "title": "如何用Python爬取网页数据",
-    "author": "shywind",
-    "date": "2022-01-11",
-    "content": "Python爬虫是一种自动化的程序，它可以从互联网上抓取数据并将其存储到本地。本文将介绍如何用Python爬取网页数据，并用BeautifulSoup库解析网页内容。",
-    "tags": ["Python", "爬虫", "BeautifulSoup"],
-  }
-]
+const userBlogList = ref([])
 
 const option = {
   title: {
@@ -558,10 +528,28 @@ const getHeatMapOriginData = async () => {
     });
 }
 
+const getMyBlogs = async () => {
+  axios.request({
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: 'http://8.134.215.31:2002/blog/get_my_blogs?uid=' + userStore.getUid(),
+    headers: {
+      'token': localStorage.getItem('JWT_TOKEN')
+    }
+  })
+    .then((response) => {
+      userBlogList.value = response.data.data.reverse();
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
 onMounted(async () => {
   await getUserInfoData()
   await getUserTags()
   await getHeatMapOriginData()
+  await getMyBlogs()
 
   isGetData.value = true;
   initHeatmap()
@@ -770,14 +758,14 @@ onMounted(async () => {
 .blogCard {
   background-color: var(--dark-background2);
   color: var(--light-background);
-  width: auto;
+  width: 35vw;
   height: auto;
   border-radius: 5px;
   padding: 20px;
   margin: 15px 10px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   font-size: 20px;
 }
@@ -785,8 +773,7 @@ onMounted(async () => {
 .blogTitleContainer {
   width: 100%;
   display: flex;
-  margin: 0 20px 10px 20px;
-  justify-content: flex-start;
+  justify-content: space-between;
   font-size: 25px;
   font-weight: bold;
 }
@@ -796,7 +783,7 @@ onMounted(async () => {
   color: var(--primary-color);
 }
 
-.blogContent {
+.blogSummary {
   font-size: 15px;
   margin: 10px 0;
 }

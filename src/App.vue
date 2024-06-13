@@ -6,6 +6,7 @@
 
 <script setup lang='js'>
 import { ref, reactive, onMounted } from 'vue'
+import { onBeforeRouteUpdate } from 'vue-router'
 onMounted(() => {
   window.addEventListener('resize', () => {
     window.location.reload()
