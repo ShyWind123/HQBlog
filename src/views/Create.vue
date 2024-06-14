@@ -72,15 +72,17 @@
 </template>
 
 <script setup lang='ts'>
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import Vditor from 'vditor';
-import { useBlogStore } from '../store/BlogStore';
-import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router';
+import { useCreateBlogStore } from '../store/CreateBlogStore';
+import { useSnackBarStore } from '../store/SnackBarStore';
+import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute();
 
-const blogStore = useBlogStore();
+const blogStore = useCreateBlogStore();
+const snackBarStore = useSnackBarStore();
 
 const vditor = ref<Vditor | null>(null);
 
@@ -119,16 +121,22 @@ const clickRelease = async () => {
   blogStore.setContent(vditor.value.getValue());
   if (canRelease()) {
     const res = await blogStore.saveBlog("发布")
-    showAfterSaveSnackBar(res)
+
+    snackBarStore.setMsg(res)
+    if (res.slice(0, 5) === "error") {
+      snackBarStore.setColor("red-accent-4")
+    } else {
+      snackBarStore.setColor("green-accent-4")
+    }
+    snackBarStore.setShow(true)
+
+    router.push({ name: "home" })
   }
 }
 const clickSaveDraft = async () => {
   blogStore.setContent(vditor.value.getValue());
   const res = await blogStore.saveBlog("草稿")
-  showAfterSaveSnackBar(res)
-}
-const showAfterSaveSnackBar = (res: string) => {
-  console.log(res);
+
   snackBar.value.msg = res;
   if (snackBar.value.msg.slice(0, 5) === "error") {
     snackBar.value.color = "red-accent-4"
@@ -137,6 +145,7 @@ const showAfterSaveSnackBar = (res: string) => {
   }
   snackBar.value.show = true
 }
+
 
 const generateSummary = async () => {
   blogStore.setContent(vditor.value.getValue());
@@ -165,8 +174,17 @@ const generateTags = async () => {
 }
 
 
-const clickDelete = () => {
-  blogStore.deleteBlog("all")
+const clickDelete = async () => {
+  const res = await blogStore.deleteBlog("all")
+
+  snackBarStore.setMsg(res)
+  if (res.slice(0, 5) === "error") {
+    snackBarStore.setColor("red-accent-4")
+  } else {
+    snackBarStore.setColor("green-accent-4")
+  }
+  snackBarStore.setShow(true)
+
   router.push({ name: "home" })
 }
 
@@ -216,7 +234,7 @@ onMounted(async () => {
     "mode": "ir",
     "icon": "material",
     "minHeight": 800,
-    "width": "100%",
+    "width": window.innerWidth * 0.75,
     "counter": {
       "enable": true
     },
@@ -242,14 +260,14 @@ window.onbeforeunload = () => {
   blogStore.saveBlog("草稿")
 }
 
-onBeforeRouteUpdate((to, from, next) => {
-  // 路由变化时执行
-  if (from.name === "create" && from.params.id != '0') {
-    blogStore.setContent(vditor.value.getValue());
-    blogStore.saveBlog("草稿")
-  }
-  next()
-})
+// onBeforeRouteUpdate((to, from, next) => {
+//   // 路由变化时执行
+//   if (from.name === "create" && from.params.id != '0') {
+//     blogStore.setContent(vditor.value.getValue());
+//     blogStore.saveBlog("草稿")
+//   }
+//   next()
+// })
 </script>
 
 <style scoped>

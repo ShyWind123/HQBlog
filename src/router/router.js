@@ -4,12 +4,11 @@ import Home from '../views/Home.vue'
 import Blogs from '../views/Blogs.vue'
 import Login from '../views/Login.vue'
 import About from '../views/About.vue'
-import Pigeonhole from '../views/Pigeonhole.vue'
+import Drafts from '../views/Drafts.vue'
 import User from '../views/User.vue'
 import Tags from '../views/Tags.vue'
 import Search from '../views/Search.vue'
 import BlogDetail from '../views/BlogDetail.vue'
-import Edit from '../views/Edit.vue'
 import Create from '../views/Create.vue'
 
 
@@ -46,9 +45,9 @@ const routerConfig = {
           component: About
         },
         {
-          name: 'pigeonhole',
-          path: 'pigeonhole',
-          component: Pigeonhole
+          name: 'drafts',
+          path: 'drafts',
+          component: Drafts
         },
         {
           name: 'user',
@@ -64,11 +63,6 @@ const routerConfig = {
           name:'blogDetail',
           path:'blogDetail/:id',
           component: BlogDetail
-        },
-        {
-          name:'edit',
-          path:'edit',
-          component: Edit
         },
         {
           name:'create',

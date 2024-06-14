@@ -1,52 +1,59 @@
 <template>
-  <Loading v-if="loading"></Loading>
-  <div class="blogDeatilContainer">
+  <Loading v-if="isLoading"></Loading>
+  <div v-else class="blogDeatilContainer">
     <div ref="catagoryRef" class="blogCatagoryContainer boxshadow">
       <span class="blogCatagoryTitle">目录</span>
       <div class="blogCatagoryContent">
-
+        <div id="outline"></div>
       </div>
     </div>
     <div class="blogDataContainer">
       <div class="blogInfo1Container">
-        <div class="blogTitle">{{ blogData.title }}</div>
-        <div>
-          <div class="optionContainer">
-            <div class="editBtn" v-if="uid === blogData.authorId" @click="onEditBlog">编辑</div>
-            <div class="deleteBtn" v-if="uid === blogData.authorId" @click="onDeleteBlog">删除</div>
+        <div class="blogTitleContainer">
+          <div class="blogTitle">{{ viewBlogStore.getTitle() }}</div>
+          <div class="likeBtn" :class="{ 'like': isLike }" @click="likeBlog()">
+            <i class="iconfont icon-dianzan"></i>
           </div>
-          <div class="blogBasicInfo">
-            <div class="blogBasicInfoItem">
-              <i class="iconfont icon-zuozhe"></i>
-              <div>&nbsp;{{ blogData.author }} </div>
+        </div>
+        <div class="infoopContainer">
+          <div class="blogBasicInfo" :key="blogBasicInfoKey">
+            <div class="blogBasicInfoItem" v-for="(info, index) in blogBasicInfos">
+              <span v-if="index != 0">&nbsp; &nbsp;| &nbsp;&nbsp;</span>
+              <i class="iconfont" :class="info.icon"></i>
+              <div>&nbsp;{{ info.value }} </div>
             </div>
-            <span>&nbsp; &nbsp;| &nbsp;&nbsp;</span>
-            <div class="blogBasicInfoItem">
-              <i class="iconfont icon-rili"></i>
-              <div>&nbsp;{{ blogData.date }} </div>
+
+            <!-- <div class="blogBasicInfoItem">
+              <i class="iconfont"></i>
+              <div>&nbsp;{{ viewBlogStore.getDate() }} </div>
             </div>
             <span>&nbsp; &nbsp;| &nbsp;&nbsp;</span>
             <div class="blogBasicInfoItem">
               <i class="iconfont icon-xihuan"></i>
-              <div>&nbsp;{{ blogData.likes }} </div>
+              <div>&nbsp;{{ viewBlogStore.getLikes() }} </div>
             </div>
             <span>&nbsp; &nbsp;| &nbsp;&nbsp;</span>
             <div class="blogBasicInfoItem">
               <i class="iconfont icon-guankan"></i>
-              <div>&nbsp;{{ blogData.views }} </div>
-            </div>
+              <div>&nbsp;{{ viewBlogStore.getViews() }} </div>
+            </div> -->
+          </div>
+
+          <div class="optionContainer">
+            <div class="editBtn" v-if="userStore.getUid() === viewBlogStore.getUid()" @click="onEditBlog">编辑</div>
+            <div class="deleteBtn" v-if="userStore.getUid() === viewBlogStore.getUid()" @click="onDeleteBlog">删除</div>
           </div>
         </div>
       </div>
       <div class="blogContentContainer boxshadow">
-        <div v-if="!loading">
-          {{ blogData.content }}
-        </div>
+        <!-- {{ viewBlogStore.getContent() }} -->
+        <div id="content"></div>
       </div>
     </div>
   </div>
+
   <v-dialog v-model="showDialog" max-width="220" persistent>
-    <v-card prepend-icon="mdi-map-marker" text="是否确定删除该文章？">
+    <v-card text="是否确定删除该文章？">
       <template v-slot:actions>
         <v-spacer></v-spacer>
         <v-btn @click="onRealDeleteBlog">
@@ -63,112 +70,29 @@
 <script setup lang='js'>
 import { ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
+import { useUserStore } from '../store/UserStore';
+import { useViewBlogStore } from '../store/ViewBlogStore'
+import Vditor from 'vditor';
+import VditorPreview from 'vditor/dist/method.min'
 import Loading from '../components/Loading.vue'
 
 const route = useRoute()
 const router = useRouter()
+const viewBlogStore = useViewBlogStore()
+const userStore = useUserStore()
 
-const loading = ref(true)
-
-const blogId = ref('0')
+const isLoading = ref(true)
 
 const catagoryRef = ref()
-
+const blogBasicInfoKey = ref(0)
 const showDialog = ref(false)
 
-const blogData = {
-  title: 'Hello Vue3',
-  content: '',
-  author: 'HQ',
-  authorId: 1,
-  date: '2022-01-01',
-  tags: ['Vue3', 'TypeScript'],
+const isLike = ref(false)
 
-  category: 'Technology',
-  subCategory: 'Front-end',
-  subSubCategory: 'Vue3',
-
-  likes: 100,
-  views: 1000
-}
-
-const catagoryData = [
-  {
-    id: 1,
-    title: 'Applications :',
-    children: [
-      { id: 2, title: 'Calendar : app' },
-      { id: 3, title: 'Chrome : app' },
-      { id: 4, title: 'Webstorm : app' },
-    ],
-  },
-  {
-    id: 5,
-    title: 'Documents :',
-    children: [
-      {
-        id: 6,
-        title: 'vuetify :',
-        children: [
-          {
-            id: 7,
-            title: 'src :',
-            children: [
-              { id: 8, title: 'index : ts' },
-              { id: 9, title: 'bootstrap : ts' },
-            ],
-          },
-        ],
-      },
-      {
-        id: 10,
-        title: 'material2 :',
-        children: [
-          {
-            id: 11,
-            title: 'src :',
-            children: [
-              { id: 12, title: 'v-btn : ts' },
-              { id: 13, title: 'v-card : ts' },
-              { id: 14, title: 'v-window : ts' },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 15,
-    title: 'Downloads :',
-    children: [
-      { id: 16, title: 'October : pdf' },
-      { id: 17, title: 'November : pdf' },
-      { id: 18, title: 'Tutorial : html' },
-    ],
-  },
-  {
-    id: 19,
-    title: 'Videos :',
-    children: [
-      {
-        id: 20,
-        title: 'Tutorials :',
-        children: [
-          { id: 21, title: 'Basic layouts : mp4' },
-          { id: 22, title: 'Advanced techniques : mp4' },
-          { id: 23, title: 'All about app : dir' },
-        ],
-      },
-      { id: 24, title: 'Intro : mov' },
-      { id: 25, title: 'Conference introduction : avi' },
-    ],
-  },
-]
-
-const uid = 1
+let blogBasicInfos = []
 
 const onEditBlog = () => {
-  router.push({ name: 'edit', params: { id: blogId.value } })
+  router.push({ name: 'create', params: { id: viewBlogStore.getId() } })
 }
 
 const onDeleteBlog = () => {
@@ -185,17 +109,75 @@ const onCancelDeleteBlog = () => {
   showDialog.value = false
 }
 
-onMounted(() => {
-  blogId.value = route.params.id;
+const likeBlog = () => {
+  isLike.value = !isLike.value
+  // TODO: like blog api
+}
+
+onMounted(async () => {
+  const id = route.params.id;
+  await viewBlogStore.init(id)
+
   document.documentElement.scrollTop = 0
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 200) {
-      catagoryRef.value.style.top = '0'
-    } else {
-      catagoryRef.value.style.top = '10vh'
-    }
-  });
-  loading.value = false
+  isLoading.value = false
+
+  // VditorPreview.mermaidRender(viewBlogStore.getContent())
+  setTimeout(() => {
+    Vditor.preview(document.getElementById('content'), viewBlogStore.getContent(), {
+      cdn: 'https://unpkg.com/vditor@3.10.4',
+      mode: 'light',
+      anchor: 2,
+      after() {
+        Vditor.outlineRender(document.getElementById('content'), document.getElementById('outline'))
+        document.getElementById('outline').style.display = 'block'
+      }
+    })
+
+    blogBasicInfos = [
+      {
+        "name": "作者",
+        "icon": "icon-zuozhe",
+        "value": viewBlogStore.getAuthor()
+      },
+      {
+        "name": "日期",
+        "icon": "icon-rili",
+        "value": viewBlogStore.getDate()
+      },
+      {
+        "name": "观看",
+        "icon": "icon-guankan",
+        "value": viewBlogStore.getViews()
+      },
+      {
+        "name": "喜欢",
+        "icon": "icon-xihuan",
+        "value": viewBlogStore.getLikes()
+      },
+    ]
+    blogBasicInfoKey.value++;
+  }, 500)
+
+  // vditor.value = new Vditor('vditor2', {
+  //   "mode": "ir",
+  //   "icon": "material",
+  //   "minHeight": 800,
+  //   "width": "100%",
+  //   "counter": {
+  //     "enable": true
+  //   },
+  //   "outline": {
+  //     "enable": true,
+  //     "position": "left"
+  //   },
+  //   // "width": screen.width * 0.96,
+  //   after: () => {
+  //     if (viewBlogStore.getContent() != null) {
+  //       vditor.value.setValue(viewBlogStore.getContent())
+  //     }
+  //     vditor.value.setTheme('dark', 'dark')
+  //   }
+  // });
 })
 </script>
 
@@ -204,40 +186,39 @@ onMounted(() => {
   height: auto;
   /* min-height: 150vh; */
   overflow: auto;
-  width: 72vw;
+  width: 85vw;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 }
 
 .blogCatagoryContainer {
-  width: 15vw;
+  width: 20vw;
   height: auto;
-  min-height: 50vh;
-  background-color: var(--dark-background2);
+  background-color: var(--light-background);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   border-radius: 5px;
   margin: 50px 20px;
-  padding: 20px;
   left: 10vw;
+  padding: 20px 0;
 }
 
 .blogCatagoryTitle {
   font-size: 20px;
   font-weight: bold;
-  color: var(--light-background);
+  margin: 5px 20px;
+  color: var(--dark-background);
 }
 
 .blogCatagoryContent {
   height: auto;
   width: 100%;
-  margin: 15px 0;
 }
 
 .blogDataContainer {
-  width: 55vw;
+  width: 65vw;
   height: auto;
   min-height: 100vh;
   display: flex;
@@ -251,16 +232,45 @@ onMounted(() => {
   height: auto;
   width: 100%;
   margin: 50px 10px 20px 10px;
-  border-bottom: 3px solid var(--primary-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.blogTitleContainer {
+  width: 100%;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
+  border-bottom: 3px solid var(--primary-color);
 }
 
 .blogTitle {
-  margin-left: 10px;
   font-size: 40px;
   font-weight: bold;
+  width: 100%;
+}
+
+.likeBtn {
+  scale: 1.5;
+  margin: 0 10px;
+}
+
+.likeBtn:hover {
+  cursor: pointer;
+  scale: 1.6;
+}
+
+.like {
+  color: var(--primary-color);
+}
+
+.infoopContainer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .blogBasicInfo {
@@ -310,10 +320,15 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   min-height: 150vh;
+  padding: 20px;
   border-radius: 5px;
+  /* color: var(--light-background); */
   /* border: 2px solid var(--dark-background2); */
   padding: 20px;
   margin: 20px 10px 50px 10px;
-  background-color: var(--dark-background);
+  background-color: var(--light-background);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 </style>

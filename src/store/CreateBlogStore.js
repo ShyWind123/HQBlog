@@ -3,7 +3,7 @@ import { ref, reactive } from 'vue'
 import axios from 'axios'
 import { useUserStore } from './UserStore'
 
-export const useBlogStore = defineStore('blog', () => {
+export const useCreateBlogStore = defineStore('createBlog', () => {
   const id = ref(0)
   const title = ref("")
   const summary = ref("")
@@ -36,7 +36,7 @@ export const useBlogStore = defineStore('blog', () => {
       await axios.request({
         method: 'get',
         maxBodyLength: Infinity,
-        url: 'http://8.134.215.31:2002/blog/get_blog?id='+id_,
+        url: 'http://8.134.215.31:2002/blog/get_create_blog?id='+id_,
         headers: { 
           "token": localStorage.getItem("JWT_TOKEN")
         }
@@ -112,6 +112,7 @@ export const useBlogStore = defineStore('blog', () => {
   }
 
   const deleteBlog = async (state_) => {
+    let res = ''
     await axios.request({
       method: 'get',
       maxBodyLength: Infinity,
@@ -121,11 +122,17 @@ export const useBlogStore = defineStore('blog', () => {
        }
     })
     .then((response) => {
+      if (response.data.code == 1) {
+        res = response.data.msg;
+      } else {
+        return "error: "+response.data.msg;
+      }
       return response.data.msg;
     })
     .catch((error) => {
       console.log(error);
     });
+    return res
   }
 
   const generateSummary = async () => {

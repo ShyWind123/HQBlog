@@ -65,8 +65,6 @@ import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import { useLoginStore } from '@/store/LoginStore'
 import { useSearchStore } from '@/store/SearchStore'
-import { useUserStore } from '@/store/UserStore'
-import { useBlogStore } from '@/store/BlogStore'
 
 const router = useRouter()
 
@@ -75,9 +73,6 @@ const { isLogin } = storeToRefs(loginStore)
 
 const searchStore = useSearchStore()
 const { search } = searchStore
-
-const userStore = useUserStore()
-const blogStore = useBlogStore()
 
 const searchBtn = ref(0)
 const searchBox = ref(0)
@@ -105,8 +100,8 @@ const gotoLinks = [
     icon: 'icon-biaoqian'
   },
   {
-    name: '归档',
-    path: '/HQBlog/pigeonhole',
+    name: '草稿',
+    path: '/HQBlog/drafts',
     icon: 'icon-guidang'
   },
   {

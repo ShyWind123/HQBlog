@@ -9,6 +9,11 @@
       已退出登录！
     </div>
   </v-snackbar>
+  <v-snackbar v-model="snackBar.show" :timeout="2000" location="top" :color="snackBar.color">
+    <div style="justify-content: center; display: flex; align-items: center; color:aliceblue; font-size: 16px;">
+      {{ snackBar.content }}
+    </div>
+  </v-snackbar>
   <loading v-if="isLoading"></loading>
   <div class="blogContainer">
     <div class="allTitleContainer"><span class="allTitle">所有博客</span></div>
@@ -82,6 +87,7 @@ import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useLoginStore } from '@/store/LoginStore';
 import { useUserStore } from '@/store/UserStore';
+import { useSnackBarStore } from '@/store/SnackBarStore';
 import Loading from '../components/Loading.vue'
 import * as echarts from 'echarts';
 import axios from 'axios'
@@ -89,11 +95,18 @@ import axios from 'axios'
 const router = useRouter()
 const loginStore = useLoginStore()
 const userStore = useUserStore()
+const snackBarStore = useSnackBarStore()
 
 const { isNowLogin, isNowLogout } = storeToRefs(loginStore)
 
 const heatmapRef = ref()
 const isLoading = ref(true)
+
+const snackBar = ref({
+  show: false,
+  content: '',
+  color: ''
+})
 
 let calendarData = {
   startDate: null,
@@ -248,7 +261,7 @@ const getAllBlogs = async () => {
     }
   })
     .then((response) => {
-      blogs.value = response.data.data;
+      blogs.value = response.data.data.reverse();
     })
     .catch((error) => {
       console.log(error);
@@ -256,6 +269,12 @@ const getAllBlogs = async () => {
 }
 
 onMounted(async () => {
+  if (snackBarStore.getShow()) {
+    snackBar.value.content = snackBarStore.getContent();
+    snackBar.value.color = snackBarStore.getColor();
+    snackBar.value.show = true;
+  }
+
   await getAllBlogs()
   if (loginStore.getIsLogin()) {
     initHeatmap()
