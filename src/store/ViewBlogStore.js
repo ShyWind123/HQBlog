@@ -13,6 +13,7 @@ export const useViewBlogStore = defineStore('viewBlog',()=> {
   const tags = ref([]);
   const likes = ref(0);
   const views = ref(0);
+  const isILike = ref(false);
 
   const init = async (id_)=>{
     const userStore = useUserStore();
@@ -36,6 +37,7 @@ export const useViewBlogStore = defineStore('viewBlog',()=> {
       tags.value = response.data.data.tags;
       likes.value = response.data.data.likes;
       views.value = response.data.data.views;
+      isILike.value = response.data.data.isILike;
     })
     .catch((error) => {
       console.log(error);
@@ -69,6 +71,30 @@ export const useViewBlogStore = defineStore('viewBlog',()=> {
   const getViews = ()=>{
     return views.value;
   }
+  const getILike = ()=>{
+    return isILike.value;
+  }
+
+  const toggleILike = async ()=>{
+    isILike.value = !isILike.value;
+
+    const userStore = useUserStore();
+
+    axios.request({
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: `http://8.134.215.31:2002/blog/toggle_like?id=${id.value}&uid=${userStore.getUid()}`,
+      headers: { 
+        'token':localStorage.getItem('JWT_TOKEN')
+      }
+    })
+    .then((response) => {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
 
   return {
     init,
@@ -80,6 +106,8 @@ export const useViewBlogStore = defineStore('viewBlog',()=> {
     getDate,
     getTags,
     getLikes,
-    getViews
+    getViews,
+    getILike,
+    toggleILike
   }
 })

@@ -56,15 +56,15 @@
       <div class="rankTitle">推荐作者</div>
       <div class="rank" v-for="rankInfo in ranksInfo">
         <v-divider></v-divider>
-        <div class="rankUsername">{{ rankInfo.username }}</div>
+        <div class="rankUsername" @click="onUsernameClick(rankInfo.uid)">{{ rankInfo.username }}</div>
         <div class="rankInfosContainer">
           <div class="countContainer">
-            <div>{{ rankInfo.count }}</div>
+            <div>{{ rankInfo.blogs }}</div>
             &nbsp;
             <i class="iconfont icon-boke" style="color:wheat;"></i>
           </div>
           <div class="watchContainer">
-            <div>{{ rankInfo.watchs }}</div>
+            <div>{{ rankInfo.views }}</div>
             &nbsp;
             <i class="iconfont icon-guankan" style="color:wheat;"></i>
           </div>
@@ -114,36 +114,7 @@ let calendarData = {
   monthBlogCnt: 10,
 }
 
-const ranksInfo = [
-  {
-    "username": "shywind",
-    "uid": 1,
-    "count": 12,
-    "watchs": 1200,
-    "likes": 112,
-  },
-  {
-    "username": "guxue",
-    "uid": 1,
-    "count": 12,
-    "watchs": 900,
-    "likes": 81
-  },
-  {
-    "username": "ameng",
-    "uid": 1,
-    "count": 12,
-    "watchs": 567,
-    "likes": 24
-  },
-  {
-    "username": "amengguxuejimmykyo",
-    "uid": 1,
-    "count": 12,
-    "watchs": 14,
-    "likes": 8
-  }
-]
+const ranksInfo = ref([])
 
 const blogs = ref([])
 
@@ -207,6 +178,10 @@ const onBlogTitleClick = (blogId) => {
   router.push({ name: 'blogDetail', params: { id: blogId } })
 }
 
+const onUsernameClick = (uid) => {
+  router.push({ name: 'user', params: { uid: uid } })
+}
+
 const initHeatmap = async () => {
   getDate()
   await getHeatMapOriginData();
@@ -268,6 +243,23 @@ const getAllBlogs = async () => {
     })
 }
 
+const getRanks = async () => {
+  axios.request({
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: 'http://8.134.215.31:2002/global/get_ranks',
+    headers: {
+      'token': localStorage.getItem('JWT_TOKEN')
+    }
+  })
+    .then((response) => {
+      ranksInfo.value = response.data.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+}
+
 onMounted(async () => {
   if (snackBarStore.getShow()) {
     snackBar.value.content = snackBarStore.getContent();
@@ -276,6 +268,7 @@ onMounted(async () => {
   }
 
   await getAllBlogs()
+  await getRanks()
   if (loginStore.getIsLogin()) {
     initHeatmap()
   } else {
@@ -445,6 +438,7 @@ onMounted(async () => {
 }
 
 .rankUsername:hover {
+  cursor: pointer;
   color: var(--primary-color);
 }
 

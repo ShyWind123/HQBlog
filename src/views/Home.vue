@@ -34,8 +34,9 @@
         <div class="search-box-container" ref="searchBox">
           <transition name="fade" enter-active-class="animate__animated animate__zoomIn"
             leave-active-class="animate__animated animate__lightSpeedOutRight">
-            <v-text-field class="search-box-input" ref="searchBoxInput" @blur="hideSearchBox" @keyup.enter="onSearch"
-              @input="changeSearchValue" spellcheck='false' variant="outlined" label="搜索" v-if="isSearchBoxShow">
+            <v-text-field v-model="searchContent" class="search-box-input" ref="searchBoxInput" @blur="hideSearchBox"
+              @keyup.enter="onSearch" @input="changeSearchValue" spellcheck='false' variant="outlined" label="搜索"
+              v-if="isSearchBoxShow">
               <template v-slot:append-inner>
                 <div class="top-right-icon-container" style="color: #fff;cursor: pointer;" @click="onSearch">
                   <i class="iconfont icon-sousuo top-right-icon" style=" font-size: 30px;"></i>
@@ -64,15 +65,14 @@ import { ref, reactive, nextTick, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRouter } from 'vue-router';
 import { useLoginStore } from '@/store/LoginStore'
-import { useSearchStore } from '@/store/SearchStore'
+import { useUserStore } from '@/store/UserStore'
 
 const router = useRouter()
 
 const loginStore = useLoginStore()
 const { isLogin } = storeToRefs(loginStore)
 
-const searchStore = useSearchStore()
-const { search } = searchStore
+const userStore = useUserStore()
 
 const searchBtn = ref(0)
 const searchBox = ref(0)
@@ -111,7 +111,7 @@ const gotoLinks = [
   },
   {
     name: '用户',
-    path: '/HQBlog/user',
+    path: `/HQBlog/user/${userStore.getUid()}`,
     icon: 'icon-yonghu'
   }]
 
@@ -146,8 +146,8 @@ const hideSearchBox = () => {
 }
 const onSearch = () => {
   if (searchContent.value != '') {
-    search(searchContent.value)
-    router.push({ name: 'search' })
+    router.push({ name: 'search', params: { searchContent: searchContent.value } })
+    routerViewKey.value++
   }
 }
 const changeSearchValue = (e) => {
@@ -190,7 +190,7 @@ onMounted(() => {
 
 .layout-header {
   display: flex;
-  height: 8vh;
+  height: 10vh;
   background-color: var(--dark-background);
   width: 100vw;
   position: relative;
@@ -252,7 +252,7 @@ onMounted(() => {
   position: absolute;
   /* transform: translateY(-50%); */
   top: 12px;
-  right: 4vw;
+  right: 1vw;
   display: flex;
   justify-content: center;
   height: 30px;
@@ -271,7 +271,7 @@ onMounted(() => {
   color: var(--light-background);
   background-color: var(--dark-background);
   font-size: 10px;
-  transform: scale(0.5);
+  transform: scale(0.6);
 }
 
 .search-box-input::placeholder {

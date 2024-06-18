@@ -11,7 +11,8 @@
       <div class="blogInfo1Container">
         <div class="blogTitleContainer">
           <div class="blogTitle">{{ viewBlogStore.getTitle() }}</div>
-          <div class="likeBtn" :class="{ 'like': isLike }" @click="likeBlog()">
+          <div v-if="userStore.getUid() != 0" class="likeBtn" :class="{ 'like': viewBlogStore.getILike() }"
+            @click="toggleLike()">
             <i class="iconfont icon-dianzan"></i>
           </div>
         </div>
@@ -87,9 +88,12 @@ const catagoryRef = ref()
 const blogBasicInfoKey = ref(0)
 const showDialog = ref(false)
 
-const isLike = ref(false)
-
 let blogBasicInfos = []
+
+const toggleLike = () => {
+  viewBlogStore.toggleILike()
+  router.go(0)
+}
 
 const onEditBlog = () => {
   router.push({ name: 'create', params: { id: viewBlogStore.getId() } })
@@ -107,11 +111,6 @@ const onRealDeleteBlog = () => {
 
 const onCancelDeleteBlog = () => {
   showDialog.value = false
-}
-
-const likeBlog = () => {
-  isLike.value = !isLike.value
-  // TODO: like blog api
 }
 
 onMounted(async () => {

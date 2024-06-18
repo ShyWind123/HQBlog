@@ -39,7 +39,7 @@
           </div>
         </div>
 
-        <div class="buttonsContainer">
+        <div class="buttonsContainer" v-if="route.params.uid === userStore.getUid()">
           <v-btn color="#000000" size="large" class="changePasswordBtn"
             @click="showChangePasswordDialog = true">修改密码</v-btn>
           <v-btn color="#e90000" size="large" class="logoutBtn" @click="showLogoutDialog = true">退出登录</v-btn>
@@ -80,7 +80,7 @@
                   </v-chip-group>
                 </div>
               </div>
-              <span v-if="blog.state == '草稿'" style="color:antiquewhite; margin: 0 20px;">草稿</span>
+              <!-- <span v-if="blog.state == '草稿'" style="color:antiquewhite; margin: 0 20px;">草稿</span> -->
             </v-timeline-item>
           </v-timeline>
         </div>
@@ -160,7 +160,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import * as echarts from 'echarts';
 import axios from 'axios'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useLoginStore } from '@/store/LoginStore'
 import { useRuleStore } from '@/store/RuleStore'
 import { useUserStore } from '@/store/UserStore'
@@ -171,6 +171,7 @@ const loginStore = useLoginStore()
 const ruleStore = useRuleStore()
 const userStore = useUserStore()
 const router = useRouter()
+const route = useRoute()
 
 const isGetData = ref(false)
 
@@ -341,7 +342,7 @@ const getDataFromOriginData = () => {
   return data;
 }
 
-const cleatCookie = (name, value) => {
+const clearCookie = (name, value) => {
   var exp = new Date();
   exp.setTime(exp.getTime() - 1);
   const expires = "; expires=" + exp.toGMTString();
@@ -349,10 +350,11 @@ const cleatCookie = (name, value) => {
 }
 
 const logout = () => {
-  cleatCookie('JWT_TOKEN', localStorage.getItem('JWT-TOKEN'))
+  clearCookie('JWT_TOKEN', localStorage.getItem('JWT-TOKEN'))
   localStorage.removeItem('JWT_TOKEN')
   loginStore.logout()
   loginStore.setIsNowLogout(true)
+  userStore.clear();
   router.push('/HQBlog/home')
 }
 
@@ -412,6 +414,9 @@ const updateUserName = (event) => {
 }
 
 const onUserNameClick = () => {
+  if (route.params.uid != userStore.getUid()) {
+    return;
+  }
   changeUsernameForm.value.showChangeUserNameInput = true;
   const userNameInputContainer = document.getElementById('userNameInputContainer');
   userNameInputContainer.style.display = 'block';
@@ -425,6 +430,9 @@ const onUserNameClick = () => {
 }
 
 const openFilePicker = (event) => {
+  if (route.params.uid != userStore.getUid()) {
+    return;
+  }
   event.stopPropagation(); // 阻止事件冒泡
   fileInput.value.click();
 }
@@ -471,7 +479,7 @@ const getUserInfoData = async () => {
   await axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/user/get_info?uid=' + userStore.getUid(),
+    url: 'http://8.134.215.31:2002/user/get_info?uid=' + route.params.uid,
     headers: {
       "token": localStorage.getItem('JWT_TOKEN')
     }
@@ -496,7 +504,7 @@ const getUserTags = async () => {
   await axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/user/get_tags?uid=' + userStore.getUid(),
+    url: 'http://8.134.215.31:2002/user/get_tags?uid=' + route.params.uid,
     headers: {
       'token': localStorage.getItem('JWT_TOKEN')
     }
@@ -513,7 +521,7 @@ const getHeatMapOriginData = async () => {
   await axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/user/get_heatmap?uid=' + userStore.getUid() + '&type=year',
+    url: 'http://8.134.215.31:2002/user/get_heatmap?uid=' + route.params.uid + '&type=year',
     headers: {
       'token': localStorage.getItem('JWT_TOKEN')
     }
@@ -532,7 +540,7 @@ const getMyBlogs = async () => {
   axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/blog/get_my_blogs?uid=' + userStore.getUid(),
+    url: 'http://8.134.215.31:2002/blog/get_my_blogs?uid=' + route.params.uid + '&state=' + "发布",
     headers: {
       'token': localStorage.getItem('JWT_TOKEN')
     }

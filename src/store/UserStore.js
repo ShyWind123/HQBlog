@@ -12,8 +12,12 @@ export const useUserStore = defineStore('user', () => {
     return uid.value;
   }
 
+  const clear = () => {
+    uid.value = 0;
+  }
+
   return {
-    uid, setUid, getUid,
+    uid, setUid, getUid,clear
   }
 },{
   persist: true,

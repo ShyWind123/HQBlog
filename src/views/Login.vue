@@ -63,8 +63,7 @@
           <v-text-field v-model="registerForm.password1"
             :rules="[ruleStore.emptyRule('密码', registerForm.password1), ruleStore.passwordRule]" variant="outlined"
             :readonly="loading" label="密码" placeholder="请输入密码" bg-color="#212121" color="#fff" class="registerInputBox"
-            :type="registerForm.showPassword1 ? 'text' : 'password'" spellcheck="false"
-            hint="密码长度至少6位，不能超过16位，必须包含数字和字母">
+            :type="registerForm.showPassword1 ? 'text' : 'password'" spellcheck="false" hint="密码长度至少6位，不超过16位，须包含数字和字母">
             <template v-slot:append-inner>
               <i v-if="registerForm.showPassword1" class='iconfont icon-yanjing_yincang'
                 @click="registerForm.showPassword1 = !registerForm.showPassword1"></i>
@@ -98,7 +97,7 @@
     <v-card max-width="400" prepend-icon="mdi-update">
       <h3 style="margin:0 15px;">{{ sendCodeText }}</h3>
       <v-otp-input @finish="codeSubmit" v-model="code"></v-otp-input>
-      <v-btn @click="showDialog.value = false">取消</v-btn>
+      <v-btn @click="showDialog = false">取消</v-btn>
     </v-card>
   </v-dialog>
 

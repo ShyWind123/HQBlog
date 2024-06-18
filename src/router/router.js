@@ -51,12 +51,12 @@ const routerConfig = {
         },
         {
           name: 'user',
-          path: 'user',
+          path: 'user/:uid',
           component: User
         },
         {
           name:'search',
-          path:'search',
+          path:'search/:searchContent',
           component: Search
         },
         {
