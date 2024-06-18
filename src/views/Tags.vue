@@ -270,16 +270,16 @@ onMounted(async () => {
   /* height: 70vh; */
   margin: 20px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  flex-flow: row wrap
+  flex-flow: row wrap;
 }
 
 .tagContainer {
   width: auto;
   font-size: 25px;
   border-bottom: 2px solid #000;
-  margin: 20px;
+  margin: 20px 40px;
 }
 
 .tagContainer:hover {

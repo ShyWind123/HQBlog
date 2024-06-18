@@ -1,12 +1,26 @@
 <template>
   <Loading v-if="isLoading"></Loading>
-  <div v-else class="blogDeatilContainer">
-    <div ref="catagoryRef" class="blogCatagoryContainer boxshadow">
-      <span class="blogCatagoryTitle">目录</span>
-      <div class="blogCatagoryContent">
-        <div id="outline"></div>
+  <div class="blogDeatilContainer">
+    <div class="catagoryTagsContainer">
+      <div ref="catagoryRef" class="blogCatagoryContainer boxshadow">
+        <span class="blogCatagoryTitle">目录</span>
+        <div class="blogCatagoryContent">
+          <div id="outline"></div>
+        </div>
+      </div>
+
+      <div class="userBlogTagsContainer boxshadow">
+        <div class="userBlogTagsTitle">博客标签</div>
+        <v-responsive class="overflow-y-auto">
+          <v-chip-group class="mt-3" column>
+            <v-chip v-for="tag in viewBlogStore.getTags()" label style="color: var(--light-background);">
+              {{ tag }}
+            </v-chip>
+          </v-chip-group>
+        </v-responsive>
       </div>
     </div>
+
     <div class="blogDataContainer">
       <div class="blogInfo1Container">
         <div class="blogTitleContainer">
@@ -74,8 +88,8 @@ import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '../store/UserStore';
 import { useViewBlogStore } from '../store/ViewBlogStore'
 import { useCreateBlogStore } from '../store/CreateBlogStore'
+import { useSnackBarStore } from '../store/SnackBarStore'
 import Vditor from 'vditor';
-import VditorPreview from 'vditor/dist/method.min'
 import Loading from '../components/Loading.vue'
 
 const route = useRoute()
@@ -83,6 +97,7 @@ const router = useRouter()
 const viewBlogStore = useViewBlogStore()
 const userStore = useUserStore()
 const createBlogStore = useCreateBlogStore()
+const snackBarStore = useSnackBarStore()
 
 const isLoading = ref(true)
 
@@ -108,7 +123,10 @@ const onDeleteBlog = () => {
 const onRealDeleteBlog = async () => {
   showDialog.value = false
   // TODO: delete blog api
-  await createBlogStore.deleteBlog("all")
+  const res = await viewBlogStore.deleteBlog("all")
+  snackBarStore.setColor("green-accent-4")
+  snackBarStore.setMsg(res)
+  snackBarStore.setShow(true)
   router.push({ name: "home" })
 }
 
@@ -121,7 +139,6 @@ onMounted(async () => {
   await viewBlogStore.init(id)
 
   document.documentElement.scrollTop = 0
-  isLoading.value = false
 
   // VditorPreview.mermaidRender(viewBlogStore.getContent())
   setTimeout(() => {
@@ -132,6 +149,8 @@ onMounted(async () => {
       after() {
         Vditor.outlineRender(document.getElementById('content'), document.getElementById('outline'))
         document.getElementById('outline').style.display = 'block'
+
+        isLoading.value = false
       }
     })
 
@@ -194,15 +213,19 @@ onMounted(async () => {
   align-items: flex-start;
 }
 
-.blogCatagoryContainer {
+.catagoryTagsContainer {
   width: 20vw;
-  height: auto;
-  background-color: var(--light-background);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  border-radius: 5px;
   margin: 50px 20px;
+}
+
+.blogCatagoryContainer {
+  width: 100%;
+  height: auto;
+  background-color: var(--light-background);
+  border-radius: 5px;
   left: 10vw;
   padding: 20px 0;
 }
@@ -332,5 +355,19 @@ onMounted(async () => {
   display: flex;
   align-items: flex-start;
   justify-content: center;
+}
+
+.userBlogTagsContainer {
+  height: auto;
+  background-color: var(--dark-background);
+  border-radius: 5px;
+  margin: 25px 0;
+  padding: 15px;
+}
+
+.userBlogTagsTitle {
+  color: var(--light-background);
+  font-size: 20px;
+  font-weight: bold;
 }
 </style>

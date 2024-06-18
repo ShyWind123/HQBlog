@@ -4,6 +4,7 @@
       {{ snackBar.msg }}
     </div>
   </v-snackbar>
+  <loading v-if="isLoading"></loading>
   <div class="createContainer">
     <div class="settingContainner">
       <div class="infoContainer">
@@ -88,6 +89,8 @@ const vditor = ref<Vditor | null>(null);
 
 const showTagsAddDialog = ref(false)
 const showConfirmDeleteDialog = ref(false)
+
+const isLoading = ref(true)
 
 const newTag = ref("")
 
@@ -248,8 +251,11 @@ onMounted(async () => {
         vditor.value.setValue(blogStore.getContent())
       }
       vditor.value.setTheme('dark', 'dark')
+
+      isLoading.value = false
     }
   });
+
 });
 
 window.onbeforeunload = () => {

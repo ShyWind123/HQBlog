@@ -265,6 +265,7 @@ onMounted(async () => {
     snackBar.value.content = snackBarStore.getMsg();
     snackBar.value.color = snackBarStore.getColor();
     snackBar.value.show = true;
+    snackBarStore.setShow(false);
   }
 
   await getAllBlogs()

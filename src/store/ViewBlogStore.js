@@ -96,6 +96,30 @@ export const useViewBlogStore = defineStore('viewBlog',()=> {
     });
   }
 
+  const deleteBlog = async (state_) => {
+    let res = ''
+    await axios.request({
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: `http://8.134.215.31:2002/blog/delete?id=${id.value}&deleteState=${state_}`,
+      headers: {
+        "token": localStorage.getItem("JWT_TOKEN")
+       }
+    })
+    .then((response) => {
+      if (response.data.code == 1) {
+        res = response.data.msg;
+      } else {
+        return "error: "+response.data.msg;
+      }
+      return response.data.msg;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+    return res
+  }
+
   return {
     init,
     getId,
@@ -108,6 +132,7 @@ export const useViewBlogStore = defineStore('viewBlog',()=> {
     getLikes,
     getViews,
     getILike,
-    toggleILike
+    toggleILike,
+    deleteBlog
   }
 })

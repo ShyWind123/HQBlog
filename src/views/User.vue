@@ -39,7 +39,7 @@
           </div>
         </div>
 
-        <div class="buttonsContainer" v-if="route.params.uid === userStore.getUid()">
+        <div class="buttonsContainer" v-if="route.params.uid == userStore.getUid()">
           <v-btn color="#000000" size="large" class="changePasswordBtn"
             @click="showChangePasswordDialog = true">修改密码</v-btn>
           <v-btn color="#e90000" size="large" class="logoutBtn" @click="showLogoutDialog = true">退出登录</v-btn>

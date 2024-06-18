@@ -27,6 +27,7 @@ export const useCreateBlogStore = defineStore('createBlog', () => {
     summary.value = "";
     content.value = "";
     tags.value = [];
+    state.value = "";
     isChanged.value = false;
   }
 
