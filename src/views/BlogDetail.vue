@@ -73,6 +73,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '../store/UserStore';
 import { useViewBlogStore } from '../store/ViewBlogStore'
+import { useCreateBlogStore } from '../store/CreateBlogStore'
 import Vditor from 'vditor';
 import VditorPreview from 'vditor/dist/method.min'
 import Loading from '../components/Loading.vue'
@@ -81,6 +82,7 @@ const route = useRoute()
 const router = useRouter()
 const viewBlogStore = useViewBlogStore()
 const userStore = useUserStore()
+const createBlogStore = useCreateBlogStore()
 
 const isLoading = ref(true)
 
@@ -103,10 +105,11 @@ const onDeleteBlog = () => {
   showDialog.value = true
 }
 
-const onRealDeleteBlog = () => {
+const onRealDeleteBlog = async () => {
   showDialog.value = false
   // TODO: delete blog api
-  router.push('/')
+  await createBlogStore.deleteBlog("all")
+  router.push({ name: "home" })
 }
 
 const onCancelDeleteBlog = () => {

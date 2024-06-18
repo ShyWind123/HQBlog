@@ -262,7 +262,7 @@ const getRanks = async () => {
 
 onMounted(async () => {
   if (snackBarStore.getShow()) {
-    snackBar.value.content = snackBarStore.getContent();
+    snackBar.value.content = snackBarStore.getMsg();
     snackBar.value.color = snackBarStore.getColor();
     snackBar.value.show = true;
   }
@@ -286,8 +286,9 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   padding: 50px 0;
+  min-height: 100vh;
 }
 
 .allTitleContainer {
