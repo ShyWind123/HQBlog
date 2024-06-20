@@ -80,6 +80,7 @@
       </template>
     </v-card>
   </v-dialog>
+  <BackTop></BackTop>
 </template>
 
 <script setup lang='js'>
@@ -91,6 +92,7 @@ import { useCreateBlogStore } from '../store/CreateBlogStore'
 import { useSnackBarStore } from '../store/SnackBarStore'
 import Vditor from 'vditor';
 import Loading from '../components/Loading.vue'
+import BackTop from '../components/BackTop.vue'
 
 const route = useRoute()
 const router = useRouter()

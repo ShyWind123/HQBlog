@@ -70,11 +70,14 @@
       </template>
     </v-card>
   </v-dialog>
+  <BackTop></BackTop>
 </template>
 
 <script setup lang='ts'>
 import { ref, onMounted } from 'vue'
 import Vditor from 'vditor';
+import Loading from '../components/Loading.vue';
+import BackTop from '../components/BackTop.vue';
 import { useCreateBlogStore } from '../store/CreateBlogStore';
 import { useSnackBarStore } from '../store/SnackBarStore';
 import { useRouter, useRoute } from 'vue-router';
