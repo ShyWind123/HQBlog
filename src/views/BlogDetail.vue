@@ -207,7 +207,7 @@ onMounted(async () => {
   height: auto;
   /* min-height: 150vh; */
   overflow: auto;
-  width: 85vw;
+  width: 90vw;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;

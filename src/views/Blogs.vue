@@ -188,8 +188,6 @@ const initHeatmap = async () => {
   let chartDom = document.getElementById('heatmap');
   let myChart = echarts.init(chartDom);
   option && myChart.setOption(option);
-
-  isLoading.value = false;
 }
 
 const getDate = () => {
@@ -227,7 +225,7 @@ const getHeatMapOriginData = async () => {
 }
 
 const getAllBlogs = async () => {
-  axios.request({
+  await axios.request({
     method: 'get',
     maxBodyLength: Infinity,
     url: 'http://8.134.215.31:2002/blog/get_all_blogs',
@@ -271,10 +269,9 @@ onMounted(async () => {
   await getAllBlogs()
   await getRanks()
   if (loginStore.getIsLogin()) {
-    initHeatmap()
-  } else {
-    isLoading.value = false;
+    await initHeatmap()
   }
+  isLoading.value = false;
 });
 </script>
 
