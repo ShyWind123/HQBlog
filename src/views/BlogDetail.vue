@@ -213,6 +213,7 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  min-height: 100vh;
 }
 
 .catagoryTagsContainer {

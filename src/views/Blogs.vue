@@ -287,6 +287,7 @@ onMounted(async () => {
   justify-content: flex-start;
   padding: 50px 0;
   min-height: 100vh;
+  min-width: 40vw;
 }
 
 .allTitleContainer {
