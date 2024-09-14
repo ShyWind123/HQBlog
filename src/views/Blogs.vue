@@ -26,7 +26,7 @@
           <div class="blogAuthor">
             <i class="iconfont icon-zuozhe"></i>
             <span>作者: </span>
-            <span>{{ blog.author }}</span>
+            <span class="blogAuthorName" @click="onAuthorClick(blog.uid)">{{ blog.author }}</span>
           </div>
           <div class="blogDate">
             <i class="iconfont icon-rili"></i>
@@ -178,6 +178,10 @@ const onBlogTitleClick = (blogId) => {
   router.push({ name: 'blogDetail', params: { id: blogId } })
 }
 
+const onAuthorClick = (uid) => {
+  router.push({ name: 'user', params: { uid: uid } })
+}
+
 const onUsernameClick = (uid) => {
   router.push({ name: 'user', params: { uid: uid } })
 }
@@ -314,8 +318,8 @@ onMounted(async () => {
   height: auto;
   border-radius: 5px;
   min-height: 40vh;
-  padding: 40px;
-  margin: 30px 10px;
+  padding: 30px;
+  margin: 20px 10px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -328,7 +332,7 @@ onMounted(async () => {
   display: flex;
   margin: 0 30px 10px 0;
   justify-content: flex-start;
-  font-size: 35px;
+  font-size: 40px;
   font-weight: bold;
 }
 
@@ -355,6 +359,15 @@ onMounted(async () => {
 
 .blogAuthor {
   margin: 0 20px 0 5px;
+}
+
+.blogAuthorName {
+  font-weight: bold;
+}
+
+.blogAuthorName:hover {
+  cursor: pointer;
+  color: var(--primary-color);
 }
 
 .blogDate {
