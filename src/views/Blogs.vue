@@ -43,7 +43,9 @@
         <i class="iconfont icon-biaoqian"></i>
         <span>标签：</span>
         <v-chip-group>
-          <v-chip v-for="tag in blog.tags" label>{{ tag }}</v-chip>
+          <v-chip v-for="tag in blog.tags" label>
+            <router-link :to="{ name: 'tags', query: { tag: tag } }">{{ tag }}</router-link>
+          </v-chip>
         </v-chip-group>
       </div>
     </div>
@@ -210,7 +212,7 @@ const getHeatMapOriginData = async () => {
   await axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/user/get_heatmap?uid=' + userStore.getUid() + '&type=month',
+    url: 'http://8.134.215.31:2002/user/heatmap?uid=' + userStore.getUid() + '&type=month',
     headers: {
       'token': localStorage.getItem('JWT_TOKEN')
     }
@@ -232,7 +234,7 @@ const getAllBlogs = async () => {
   await axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/blog/get_all_blogs',
+    url: 'http://8.134.215.31:2002/blog/all-blogs',
     headers: {
       'token': localStorage.getItem('JWT_TOKEN')
     }
@@ -249,7 +251,7 @@ const getRanks = async () => {
   axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/global/get_ranks',
+    url: 'http://8.134.215.31:2002/global/ranks',
     headers: {
       'token': localStorage.getItem('JWT_TOKEN')
     }

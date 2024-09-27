@@ -1,16 +1,18 @@
 <template>
   <div class="allContainer">
-    <div class="chartContainer">
+    <div class="chartContainer" v-if="!justBlogs">
       <div id="chart"></div>
     </div>
-    <div class="tagTitleContainer" :key="tagKey">
-      <span>现在共有<span style="color:var(--primary-color)">{{ seriesData.length }}</span>个标签</span>
-    </div>
-    <div class="tagsContainer">
-      <div v-for="(tag, idx) in seriesData"
-        :style="{ opacity: getOpacity(tag.value, maxValue, 0), scale: getScale(tag.value, maxValue, 0) }" :key="tag.id"
-        class="tagContainer" @click="toggleTagActive(tag, idx)">
-        {{ tag.name }}
+    <div v-if="!justBlogs">
+      <div class="tagTitleContainer" :key="tagKey">
+        <span>目前共有<span style="color:var(--primary-color)">{{ seriesData.length }}</span>个标签</span>
+      </div>
+      <div class="tagsContainer">
+        <div v-for="(tag, idx) in seriesData"
+          :style="{ opacity: getOpacity(tag.value, maxValue, 0), scale: getScale(tag.value, maxValue, 0) }"
+          :key="tag.id" class="tagContainer" @click="toggleTagActive(tag, idx)">
+          {{ tag.name }}
+        </div>
       </div>
     </div>
     <div v-if="activeTags.length > 0" class="searchTagContainer">
@@ -48,7 +50,9 @@
             <i class="iconfont icon-biaoqian"></i>
             <span>标签：</span>
             <v-chip-group>
-              <v-chip v-for="tag in blog.tags" label>{{ tag }}</v-chip>
+              <v-chip v-for="tag in blog.tags" label>
+                <router-link :to="{ name: 'tags', query: { tag: tag } }">{{ tag }}</router-link>
+              </v-chip>
             </v-chip-group>
           </div>
         </div>
@@ -64,14 +68,17 @@
 import { ref, reactive, onMounted, watch } from 'vue'
 import * as echarts from 'echarts';
 import axios from 'axios'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 let seriesData = [], legendData = [];
 const activeTags = ref([]);
 let maxValue = 0;
 const searchBlogs = ref([]);
 
+const justBlogs = ref(false);
+
 const router = useRouter()
+const route = useRoute();
 const tagKey = ref(0)
 
 let option = {
@@ -164,14 +171,14 @@ const getScale = (value, max, min) => {
 
 watch(activeTags.value, (newTags, oldTags) => {
   if (newTags.length > 0) {
-    let urlPath = 'http://8.134.215.31:2002/global/search_blogs_by_tags'
+    let urlPath = 'http://8.134.215.31:2002/global/search-by-tags'
     for (let i = 0; i < newTags.length; i++) {
       urlPath += (i == 0 ? "?" : "&") + 'tags=' + newTags[i].name;
     }
     console.log(urlPath);
 
     axios.request({
-      method: 'post',
+      method: 'get',
       maxBodyLength: Infinity,
       url: urlPath,
       headers: {
@@ -187,6 +194,10 @@ watch(activeTags.value, (newTags, oldTags) => {
   }
 });
 
+watch(route, (newRoute, oldRoute) => {
+  location.reload();
+})
+
 const shuffleArray = (array) => {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -196,10 +207,11 @@ const shuffleArray = (array) => {
 }
 
 onMounted(async () => {
+  scrollTo(0, 0);
   await axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/global/get_tags',
+    url: 'http://8.134.215.31:2002/global/tags',
     headers: {
       'token': localStorage.getItem('token')
     }
@@ -231,6 +243,15 @@ onMounted(async () => {
   myChart.on('click', onChartClick);//点击事件
 
   tagKey.value++;
+
+
+  // 获取路由参数 
+  const tagName = route.query.tag;
+  const tag = seriesData.find(item => item.name === tagName);
+  if (tag) {
+    toggleTagActive(tag, getTagIdx(tag));
+    justBlogs.value = true;
+  }
 })
 
 </script>

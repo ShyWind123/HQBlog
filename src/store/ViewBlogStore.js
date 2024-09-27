@@ -23,7 +23,7 @@ export const useViewBlogStore = defineStore('viewBlog',()=> {
     await axios.request({
       method: 'get',
       maxBodyLength: Infinity,
-      url: `http://8.134.215.31:2002/blog/get_view_blog?id=${id_}&uid=${userStore.getUid()}`,
+      url: `http://8.134.215.31:2002/blog/view-blog?id=${id_}&uid=${userStore.getUid()}`,
       headers: {
         'token': localStorage.getItem('JWT_TOKEN')
        }
@@ -83,7 +83,7 @@ export const useViewBlogStore = defineStore('viewBlog',()=> {
     axios.request({
       method: 'get',
       maxBodyLength: Infinity,
-      url: `http://8.134.215.31:2002/blog/toggle_like?id=${id.value}&uid=${userStore.getUid()}`,
+      url: `http://8.134.215.31:2002/blog/toggle-like?id=${id.value}&uid=${userStore.getUid()}`,
       headers: { 
         'token':localStorage.getItem('JWT_TOKEN')
       }
@@ -99,9 +99,9 @@ export const useViewBlogStore = defineStore('viewBlog',()=> {
   const deleteBlog = async (state_) => {
     let res = ''
     await axios.request({
-      method: 'get',
+      method: 'delete',
       maxBodyLength: Infinity,
-      url: `http://8.134.215.31:2002/blog/delete?id=${id.value}&deleteState=${state_}`,
+      url: `http://8.134.215.31:2002/blog?id=${id.value}&deleteState=${state_}`,
       headers: {
         "token": localStorage.getItem("JWT_TOKEN")
        }

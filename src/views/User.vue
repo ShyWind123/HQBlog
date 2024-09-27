@@ -22,20 +22,20 @@
                 @keyup.enter="updateUserName"></v-text-field>
             </div>
             <div v-if="!changeUsernameForm.showChangeUserNameInput" class="userName" @click="onUserNameClick()">{{
-    userBasicInfo.userName
-  }}
+              userBasicInfo.userName
+            }}
             </div>
           </div>
           <div class="userOtherInfoContainer">
             <span class="userOtherInfo" style="margin-right: 0;"><i class="iconfont icon-boke" style="color:blue;"></i>
               博客数量: {{
-      userBasicInfo.totalBlogs }}</span>
+                userBasicInfo.totalBlogs }}</span>
             <span class="userOtherInfo" style="margin-right: 0;"><i class="iconfont icon-xihuan" style="color:red;"></i>
               点赞量: {{
-    userBasicInfo.totalLikes }}</span>
+                userBasicInfo.totalLikes }}</span>
             <span class="userOtherInfo" style="margin-right: 0;"><i class="iconfont icon-guankan"
                 style="color:green;"></i> 阅读量: {{
-    userBasicInfo.totalViews }}</span>
+                  userBasicInfo.totalViews }}</span>
           </div>
         </div>
 
@@ -59,7 +59,10 @@
       <div class="userBlogListContainer">
         <div class="boxshadow userBlogList">
           <div class="userBlogListTitle">我的博客</div>
-          <v-timeline line-color="white" class="timelineContainer" side="end">
+          <div class="myBlogListLoading" v-if="!isGetMyBlogList">
+            <LoadingInner></LoadingInner>
+          </div>
+          <v-timeline v-else line-color="white" class="timelineContainer" side="end">
             <v-timeline-item dot-color="#e90000" size="lx-smallarge" v-for="blog in userBlogList">
               <template v-slot:opposite>
                 <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:8vw;">
@@ -76,7 +79,9 @@
 
                 <div class="blogTags">
                   <v-chip-group>
-                    <v-chip v-for="tag in blog.tags" label>{{ tag }}</v-chip>
+                    <v-chip v-for="tag in blog.tags" label>
+                      <router-link :to="{ name: 'tags', query: { tag: tag } }">{{ tag }}</router-link>
+                    </v-chip>
                   </v-chip-group>
                 </div>
               </div>
@@ -91,7 +96,7 @@
         <v-responsive class="overflow-y-auto">
           <v-chip-group class="mt-3" column>
             <v-chip v-for="tag in userTagsList" label style="color: var(--light-background);">
-              {{ tag.name }}
+              <router-link :to="{ name: 'tags', query: { tag: tag.name } }">{{ tag.name }}</router-link>
             </v-chip>
           </v-chip-group>
         </v-responsive>
@@ -148,7 +153,7 @@
   </v-dialog>
 
   <v-snackbar v-model="snackbarInfo.show" :timeout="2000" location="top"
-    :color="snackbarInfo.success ? 'green-accent-4' :'red-accent-4'">
+    :color="snackbarInfo.success ? 'green-accent-4' : 'red-accent-4'">
     <div style="justify-content: center; display: flex; align-items: center;color: #fff;">
       {{ snackbarInfo.msg }}
     </div>
@@ -166,6 +171,7 @@ import { useRuleStore } from '@/store/RuleStore'
 import { useUserStore } from '@/store/UserStore'
 import BackTop from '../components/BackTop.vue';
 import Loading from '../components/Loading.vue';
+import LoadingInner from '../components/LoadingInner.vue';
 
 const loginStore = useLoginStore()
 const ruleStore = useRuleStore()
@@ -174,6 +180,7 @@ const router = useRouter()
 const route = useRoute()
 
 const isGetData = ref(false)
+const isGetMyBlogList = ref(true)
 
 let calendarData = {
   startDate: null,
@@ -301,9 +308,9 @@ const changePassword = () => {
     return;
   }
   axios.request({
-    method: 'post',
+    method: 'put',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/user/change_password',
+    url: 'http://8.134.215.31:2002/user/password',
     headers: {
       'token': localStorage.getItem("JWT_TOKEN"),
       'Content-Type': 'application/json'
@@ -383,9 +390,9 @@ const onBlogTitleClick = (blogId) => {
 
 const updateUserName = (event) => {
   axios.request({
-    method: 'post',
+    method: 'put',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/user/change_username?',
+    url: 'http://8.134.215.31:2002/user/username?',
     headers: {
       'token': localStorage.getItem("JWT_TOKEN"),
       'Content-Type': 'application/json'
@@ -445,9 +452,9 @@ const handleFileChange = (event) => {
     formData.append('avatar', file);
 
     axios.request({
-      method: 'post',
+      method: 'put',
       maxBodyLength: Infinity,
-      url: 'http://8.134.215.31:2002/user/change_avatar',
+      url: 'http://8.134.215.31:2002/user/avatar',
       headers: {
         "Content-Type": "multipart/form-data",
         'token': localStorage.getItem("JWT_TOKEN")
@@ -479,7 +486,7 @@ const getUserInfoData = async () => {
   await axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/user/get_info?uid=' + route.params.uid,
+    url: 'http://8.134.215.31:2002/user/info?uid=' + route.params.uid,
     headers: {
       "token": localStorage.getItem('JWT_TOKEN')
     }
@@ -504,7 +511,7 @@ const getUserTags = async () => {
   await axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/user/get_tags?uid=' + route.params.uid,
+    url: 'http://8.134.215.31:2002/user/tags?uid=' + route.params.uid,
     headers: {
       'token': localStorage.getItem('JWT_TOKEN')
     }
@@ -521,7 +528,7 @@ const getHeatMapOriginData = async () => {
   await axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/user/get_heatmap?uid=' + route.params.uid + '&type=year',
+    url: 'http://8.134.215.31:2002/user/heatmap?uid=' + route.params.uid + '&type=year',
     headers: {
       'token': localStorage.getItem('JWT_TOKEN')
     }
@@ -540,13 +547,14 @@ const getMyBlogs = async () => {
   axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/blog/get_my_blogs?uid=' + route.params.uid + '&state=' + "发布",
+    url: 'http://8.134.215.31:2002/blog/my-blogs?uid=' + route.params.uid + '&state=' + "发布",
     headers: {
       'token': localStorage.getItem('JWT_TOKEN')
     }
   })
     .then((response) => {
       userBlogList.value = response.data.data.reverse();
+      isGetMyBlogList.value = true;
     })
     .catch((error) => {
       console.log(error);
@@ -560,6 +568,7 @@ onMounted(async () => {
   await getMyBlogs()
 
   isGetData.value = true;
+  isGetMyBlogList.value = false;
   initHeatmap()
 })
 
@@ -761,6 +770,15 @@ onMounted(async () => {
 
 .timelineContainer {
   margin: 20px;
+}
+
+.myBlogListLoading {
+  height: 50vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .blogCard {

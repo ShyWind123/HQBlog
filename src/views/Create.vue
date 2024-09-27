@@ -239,7 +239,8 @@ onMounted(async () => {
   vditor.value = new Vditor('vditor', {
     "mode": "ir",
     "icon": "material",
-    "minHeight": 800,
+    // "minHeight": 800,
+    "height": window.innerHeight * 1.5,
     "width": window.innerWidth * 0.75,
     "counter": {
       "enable": true
@@ -350,7 +351,7 @@ window.onbeforeunload = () => {
   justify-content: center;
   align-content: center;
   /* border: 2px solid #ccc; */
-  background-color: var(--dark-background);
+  background-color: var(--light-background);
   border-radius: 5px;
   padding: 10px;
   margin: 10px;
@@ -370,7 +371,7 @@ window.onbeforeunload = () => {
   justify-content: center;
   margin-right: 20px;
   font-weight: bold;
-  color: aliceblue;
+  color: #000;
 }
 
 .tagsOpContainer {
@@ -380,16 +381,18 @@ window.onbeforeunload = () => {
 }
 
 .tagsOpBtn {
-  color: gold;
+  color: #caa;
+  padding: 1px;
+  margin-right: 20px;
 }
 
 .tagsOpBtn:hover {
-  color: yellow;
+  color: var(--primary-color);
 }
 
 .chip {
-  background-color: #fff;
-  color: #000;
+  background-color: #000;
+  color: #fff;
 }
 
 .optionContainer {

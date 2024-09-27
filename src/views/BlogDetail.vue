@@ -1,26 +1,6 @@
 <template>
   <Loading v-if="isLoading"></Loading>
   <div class="blogDeatilContainer">
-    <div class="catagoryTagsContainer">
-      <div ref="catagoryRef" class="blogCatagoryContainer boxshadow">
-        <span class="blogCatagoryTitle">目录</span>
-        <div class="blogCatagoryContent">
-          <div id="outline"></div>
-        </div>
-      </div>
-
-      <div class="userBlogTagsContainer boxshadow">
-        <div class="userBlogTagsTitle">博客标签</div>
-        <v-responsive class="overflow-y-auto">
-          <v-chip-group class="mt-3" column>
-            <v-chip v-for="tag in viewBlogStore.getTags()" label style="color: var(--light-background);">
-              {{ tag }}
-            </v-chip>
-          </v-chip-group>
-        </v-responsive>
-      </div>
-    </div>
-
     <div class="blogDataContainer">
       <div class="blogInfo1Container">
         <div class="blogTitleContainer">
@@ -65,6 +45,26 @@
         <div id="content"></div>
       </div>
     </div>
+
+    <div class="catagoryTagsContainer">
+      <div class="userBlogTagsContainer boxshadow">
+        <div class="userBlogTagsTitle">博客标签</div>
+        <v-responsive class="overflow-y-auto">
+          <v-chip-group class="mt-3" column>
+            <v-chip v-for="tag in viewBlogStore.getTags()" class="chip" label style="color: var(--light-background);">
+              <router-link :to="{ name: 'tags', query: { tag: tag } }">{{ tag }}</router-link>
+            </v-chip>
+          </v-chip-group>
+        </v-responsive>
+      </div>
+
+      <div ref="catagoryRef" class="blogCatagoryContainer boxshadow">
+        <span class="blogCatagoryTitle">目录</span>
+        <div class="blogCatagoryContent">
+          <div id="outline"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <v-dialog v-model="showDialog" max-width="220" persistent>
@@ -98,7 +98,6 @@ const route = useRoute()
 const router = useRouter()
 const viewBlogStore = useViewBlogStore()
 const userStore = useUserStore()
-const createBlogStore = useCreateBlogStore()
 const snackBarStore = useSnackBarStore()
 
 const isLoading = ref(true)
@@ -209,7 +208,7 @@ onMounted(async () => {
   height: auto;
   /* min-height: 150vh; */
   overflow: auto;
-  width: 90vw;
+  width: 85vw;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -217,16 +216,24 @@ onMounted(async () => {
 }
 
 .catagoryTagsContainer {
+  position: relative;
+  height: 200vh;
   width: 20vw;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  margin: 50px 20px;
+  margin: 40px 20px;
+  overflow: visible;
 }
 
 .blogCatagoryContainer {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 50px;
   width: 100%;
   height: auto;
+  max-height: 80vh;
+  overflow: auto;
   background-color: var(--light-background);
   border-radius: 5px;
   left: 10vw;
@@ -246,7 +253,7 @@ onMounted(async () => {
 }
 
 .blogDataContainer {
-  width: 65vw;
+  width: 60vw;
   height: auto;
   min-height: 100vh;
   display: flex;
@@ -362,15 +369,20 @@ onMounted(async () => {
 
 .userBlogTagsContainer {
   height: auto;
-  background-color: var(--dark-background);
+  background-color: var(--light-background);
   border-radius: 5px;
   margin: 25px 0;
   padding: 15px;
 }
 
 .userBlogTagsTitle {
-  color: var(--light-background);
+  color: var(--dark-background);
   font-size: 20px;
   font-weight: bold;
+}
+
+.chip {
+  background-color: #333;
+  color: #fff;
 }
 </style>

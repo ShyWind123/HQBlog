@@ -23,7 +23,9 @@
               <div class="draftSummaryContainer">{{ draft.summary }}</div>
               <div class="draftTagsContainer">
                 <v-chip-group>
-                  <v-chip v-for="tag in draft.tags" label>{{ tag }}</v-chip>
+                  <v-chip v-for="tag in draft.tags" label>
+                    <router-link :to="{ name: 'tags', query: { tag: tag } }">{{ tag }}</router-link>
+                  </v-chip>
                 </v-chip-group>
               </div>
             </v-card>
@@ -54,7 +56,7 @@ onMounted(() => {
   axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'http://8.134.215.31:2002/blog/get_my_blogs?uid=' + userStore.getUid() + '&state=' + "草稿",
+    url: 'http://8.134.215.31:2002/blog/my-blogs?uid=' + userStore.getUid() + '&state=' + "草稿",
     headers: {
       'token': localStorage.getItem('JWT_TOKEN')
     }
@@ -84,7 +86,7 @@ onMounted(() => {
 }
 
 .allTitle {
-  border-bottom: 2px solid var(--primary-color);
+  border-bottom: 3px solid var(--primary-color);
 }
 
 .draftCardContainer {

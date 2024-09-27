@@ -31,7 +31,9 @@
             <i class="iconfont icon-biaoqian"></i>
             <span>标签：</span>
             <v-chip-group>
-              <v-chip v-for="tag in blog.tags" label>{{ tag }}</v-chip>
+              <v-chip v-for="tag in blog.tags" label>
+                <router-link :to="{ name: 'tags', query: { tag: tag } }">{{ tag }}</router-link>
+              </v-chip>
             </v-chip-group>
           </div>
         </div>
@@ -63,7 +65,7 @@ const searchBlogs = async () => {
   await axios.request({
     method: 'get',
     maxBodyLength: Infinity,
-    url: `http://8.134.215.31:2002/global/search_blogs_by_text?text=${searchContent.value}`,
+    url: `http://8.134.215.31:2002/global/search-by-text?text=${searchContent.value}`,
     headers: {
       'token': localStorage.getItem('JWT_TOKEN')
     }

@@ -37,7 +37,7 @@ export const useCreateBlogStore = defineStore('createBlog', () => {
       await axios.request({
         method: 'get',
         maxBodyLength: Infinity,
-        url: 'http://8.134.215.31:2002/blog/get_create_blog?id='+id_,
+        url: 'http://8.134.215.31:2002/blog/create-blog?id='+id_,
         headers: { 
           "token": localStorage.getItem("JWT_TOKEN")
         }
@@ -59,7 +59,7 @@ export const useCreateBlogStore = defineStore('createBlog', () => {
       await axios.request({
         method: 'get',
         maxBodyLength: Infinity,
-        url: 'http://8.134.215.31:2002/blog/get_new_id?uid=' + userStore.getUid(),
+        url: 'http://8.134.215.31:2002/blog/new-id?uid=' + userStore.getUid(),
         headers: { 
           "token": localStorage.getItem("JWT_TOKEN")
         }
@@ -81,7 +81,7 @@ export const useCreateBlogStore = defineStore('createBlog', () => {
     await axios.request({
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'http://8.134.215.31:2002/blog/save',
+      url: 'http://8.134.215.31:2002/blog',
       headers: { 
         'Content-Type': 'application/json',
         'token': localStorage.getItem("JWT_TOKEN")
@@ -115,9 +115,9 @@ export const useCreateBlogStore = defineStore('createBlog', () => {
   const deleteBlog = async (state_) => {
     let res = ''
     await axios.request({
-      method: 'get',
+      method: 'delete',
       maxBodyLength: Infinity,
-      url: `http://8.134.215.31:2002/blog/delete?id=${id.value}&deleteState=${state_}`,
+      url: `http://8.134.215.31:2002/blog?id=${id.value}&deleteState=${state_}`,
       headers: {
         "token": localStorage.getItem("JWT_TOKEN")
        }

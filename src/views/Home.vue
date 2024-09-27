@@ -5,8 +5,10 @@
         <div class="top-left animate__animated animate__bounce">
           <router-link to="/HQBlog/home">
             <div class="logo-container">
-              <span class="logo-content" style="color: var(--primary-color);">HQ</span>
-              <span class="logo-content" style="color: var(--light-background);">Blog</span>
+              <!-- <span class="logo-content" style="color: var(--primary-color);">HQ</span>
+              <span class="logo-content" style="color: var(--light-background);">Blog</span> -->
+              <span class="logo-content" style="color: var(--primary-color);">风软</span>
+              <span class="logo-content" style="color: var(--light-background);">阁</span>
             </div>
           </router-link>
         </div>
