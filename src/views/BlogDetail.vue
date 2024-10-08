@@ -5,7 +5,7 @@
       <div class="blogInfo1Container">
         <div class="blogTitleContainer">
           <div class="blogTitle">{{ viewBlogStore.getTitle() }}</div>
-          <div v-if="userStore.getUid() != 0" class="likeBtn" :class="{ 'like': viewBlogStore.getILike() }"
+          <div v-if="loginStore.isLogin" class="likeBtn" :class="{ 'like': viewBlogStore.getILike() }"
             @click="toggleLike()">
             <i class="iconfont icon-dianzan"></i>
           </div>
@@ -34,7 +34,7 @@
             </div> -->
           </div>
 
-          <div class="optionContainer">
+          <div class="optionContainer" v-if="loginStore.isLogin">
             <div class="editBtn" v-if="userStore.getUid() === viewBlogStore.getUid()" @click="onEditBlog">编辑</div>
             <div class="deleteBtn" v-if="userStore.getUid() === viewBlogStore.getUid()" @click="onDeleteBlog">删除</div>
           </div>
@@ -87,6 +87,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '../store/UserStore';
+import { useLoginStore } from '../store/LoginStore'
 import { useViewBlogStore } from '../store/ViewBlogStore'
 import { useCreateBlogStore } from '../store/CreateBlogStore'
 import { useSnackBarStore } from '../store/SnackBarStore'
@@ -98,6 +99,7 @@ const route = useRoute()
 const router = useRouter()
 const viewBlogStore = useViewBlogStore()
 const userStore = useUserStore()
+const loginStore = useLoginStore()
 const snackBarStore = useSnackBarStore()
 
 const isLoading = ref(true)
@@ -140,6 +142,19 @@ onMounted(async () => {
   await viewBlogStore.init(id)
 
   document.documentElement.scrollTop = 0
+
+  // 监听滚轮事件
+  document.addEventListener('scroll', () => {
+    // 距离顶部大于 目前高度 * 1.2
+    if (document.documentElement.scrollTop > catagoryRef.value.offsetTop * 1.2) {
+      // 添加类 scrollBlogCatagory
+      catagoryRef.value.classList.add('scrollBlogCatagory')
+    } else {
+      // 移除类 scrollBlogCatagory
+      catagoryRef.value.classList.remove('scrollBlogCatagory')
+    }
+  })
+
 
   // VditorPreview.mermaidRender(viewBlogStore.getContent())
   setTimeout(() => {
@@ -216,8 +231,6 @@ onMounted(async () => {
 }
 
 .catagoryTagsContainer {
-  position: relative;
-  height: 200vh;
   width: 20vw;
   display: flex;
   flex-direction: column;
@@ -227,17 +240,19 @@ onMounted(async () => {
 }
 
 .blogCatagoryContainer {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 50px;
-  width: 100%;
+  width: 20vw;
   height: auto;
   max-height: 80vh;
   overflow: auto;
   background-color: var(--light-background);
   border-radius: 5px;
-  left: 10vw;
   padding: 20px 0;
+}
+
+.scrollBlogCatagory {
+  position: fixed;
+  top: 6vh;
+  right: 7.7vw;
 }
 
 .blogCatagoryTitle {

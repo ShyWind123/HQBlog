@@ -137,7 +137,7 @@ onMounted(() => {
   width: 50vw;
   height: auto;
   border-radius: 5px;
-  min-height: 40vh;
+  min-height: 30vh;
   padding: 40px;
   margin: 30px 10px;
   display: flex;

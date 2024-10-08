@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, reactive } from 'vue'
 import axios from 'axios'
 import { useUserStore } from './UserStore'
+import LZString from 'lz-string'
 
 export const useCreateBlogStore = defineStore('createBlog', () => {
   const id = ref(0)
@@ -46,6 +47,7 @@ export const useCreateBlogStore = defineStore('createBlog', () => {
         id.value = response.data.data.id;
         title.value = response.data.data.title;
         summary.value = response.data.data.summary;
+        //content.value = LZString.decompress(response.data.data.content);
         content.value = response.data.data.content;
         tags.value = response.data.data.tags;
         state.value = response.data.data.state;
@@ -75,6 +77,13 @@ export const useCreateBlogStore = defineStore('createBlog', () => {
   }
 
   const saveBlog = async (state_) => {
+    // //压缩效果测试
+    // console.log("压缩前长度：", content.value.length);
+    // const compressedContent = LZString.compress(content.value)
+    // console.log("压缩后长度：", compressedContent.length);
+    // console.log("压缩率：", compressedContent.length / content.value.length * 100, "%");
+    // console.log("解缩后长度：", LZString.decompress(compressedContent).length);
+
     state.value = state_
     const userStore = useUserStore()
     let res = ''
@@ -91,6 +100,7 @@ export const useCreateBlogStore = defineStore('createBlog', () => {
         "uid": userStore.getUid(),
         "title": title.value,
         "summary": summary.value,
+        //"content": LZString.compress(content.value),
         "content": content.value,
         "tags": tags.value,
         "state": state_

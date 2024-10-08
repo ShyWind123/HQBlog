@@ -17,16 +17,16 @@ const backTop = () => {
   /* 固定定位 */
   position: fixed;
   bottom: 5vh;
-  right: 5vw;
+  right: 3vw;
   z-index: 999;
   /* 回到顶部样式 */
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   background-color: var(--dark-background);
   /* 字体在元素中水平垂直居中 */
-  line-height: 35px;
+  line-height: 40px;
   text-align: center;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--light-background);
   /* 设置圆角 */
   border-radius: 5px;

@@ -319,7 +319,7 @@ onMounted(async () => {
   width: 45vw;
   height: auto;
   border-radius: 5px;
-  min-height: 40vh;
+  min-height: 30vh;
   padding: 30px;
   margin: 20px 10px;
   display: flex;
@@ -332,7 +332,7 @@ onMounted(async () => {
 .blogTitleContainer {
   width: 100%;
   display: flex;
-  margin: 0 30px 10px 0;
+  margin: 0 20px 10px 0;
   justify-content: flex-start;
   font-size: 40px;
   font-weight: bold;
@@ -408,7 +408,8 @@ onMounted(async () => {
 
 .heatmapContainer {
   width: 20vw;
-  height: 40vh;
+  /* height: 40vh; */
+  height: 250px;
   margin: 20px;
   border-radius: 5px;
   background-color: var(--dark-background);

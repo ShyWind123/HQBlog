@@ -55,7 +55,8 @@
 
       <v-footer>
         <div class="px-4 py-2 bg-black text-center w-100">
-          {{ new Date().getFullYear() }} — <strong>HQBlog</strong>
+          <strong class="icpContainer" @click="openICP()">鄂ICP备2024075578号</strong>
+          <!-- <strong style="margin:0 20px;">HQBlog</strong> -->
         </div>
       </v-footer>
     </div>
@@ -118,7 +119,7 @@ const gotoLinks = [
   }]
 
 const getPath = (link) => {
-  if (link.name === '首页') {
+  if (link.name === '首页' || link.name === '标签' || link.name === '关于') {
     return link.path;
   }
   else {
@@ -173,6 +174,10 @@ const checkCookie = () => {
     loginStore.login()
     routerViewKey.value++
   }
+}
+
+const openICP = () => {
+  window.open('https://beian.miit.gov.cn', '_blank')
 }
 
 
@@ -308,5 +313,14 @@ onMounted(() => {
 .v-footer {
   margin: 0;
   padding: 0;
+}
+
+.icpContainer {
+  margin: 0 20px;
+}
+
+.icpContainer:hover {
+  cursor: pointer;
+  color: var(--primary-color);
 }
 </style>
