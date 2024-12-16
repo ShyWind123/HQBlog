@@ -7,7 +7,7 @@
       <div class="userInfoContainer">
         <div class="userAvatarContainer">
           <div class="userAvatar">
-            <v-avatar :image="userBasicInfo.avatar" size="70" @click="openFilePicker"></v-avatar>
+            <v-avatar :image="userBasicInfo.avatar" size="80" @click="openFilePicker"></v-avatar>
             <input type="file" id="avatarInput" ref="fileInput" accept="image/*" style="display: none"
               @change="handleFileChange" />
           </div>
@@ -49,7 +49,9 @@
       <div class="userBlogHeatmapContainer">
         <div class="userBlogHeatmap boxshadow">
           <div class="userBlogHeatmapTitle">博客记录</div>
-          <div class="heatmapContainer" id="heatmapContainer"></div>
+          <div class="heatmapOuterContainer">
+            <div class="heatmapContainer" id="heatmapContainer"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -110,7 +112,7 @@
     </v-card>
   </v-dialog>
   <v-dialog v-model="showChangePasswordDialog" width="auto">
-    <v-card width="500" prepend-icon="mdi-update" title="修改密码">
+    <v-card width="400" prepend-icon="mdi-update" title="修改密码">
       <v-form v-model="formCompleted" class="changePasswordFormContainer">
         <v-text-field v-model="changePasswordForm.oldPassword"
           :rules="[ruleStore.emptyRule('原密码', changePasswordForm.oldPassword)]" variant="outlined" :readonly="loading"
@@ -819,5 +821,116 @@ onMounted(async () => {
   justify-content: flex-start;
   align-items: center;
   width: 100%;
+}
+
+@media screen and (max-width: 768px) {
+  .userContainer {
+    width: 100vw;
+  }
+
+  .userInfoContainer {
+    flex-direction: column;
+    height: auto;
+    width: 90vw;
+  }
+
+  .userAvatarContainer {
+    padding: 0;
+  }
+
+  .userEmail {
+    font-size: 10px;
+    margin: 0;
+  }
+
+  .userBasicInfo {
+    width: 90vw;
+    padding: 0 10px;
+    height: auto;
+  }
+
+  .userNameSetting {
+    width: 90vw;
+    align-items: center;
+  }
+
+  .userName {
+    font-size: 55px;
+  }
+
+  .userNameInput {
+    width: 50vw;
+  }
+
+  .userOtherInfoContainer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .userOtherInfo {
+    margin: 5px 15px;
+  }
+
+  .buttonsContainer {
+    flex-direction: row;
+  }
+
+  .changePasswordBtn {
+    margin: 5px 10px;
+  }
+
+  .logoutBtn {
+    margin: 5px 10px;
+  }
+
+  .userBlogHeatmapContainer {
+    width: 95vw;
+    padding: 10px;
+
+  }
+
+  .userBlogHeatmap {
+    padding: 10px;
+  }
+
+  .heatmapOuterContainer {
+    overflow: scroll;
+  }
+
+  .heatmapContainer {
+    height: 22vh;
+    width: 200vw;
+  }
+
+  .subContainer2 {
+    flex-direction: column-reverse;
+  }
+
+  .userBlogTagsContainer {
+    width: 90vw;
+    margin: 10px;
+    padding: 10px;
+  }
+
+  .userBlogListContainer {
+    padding: 10px;
+    width: 95vw;
+  }
+
+  .timelineContainer {
+    margin: 10px;
+  }
+
+  .blogCard {
+    width: 55vw;
+    margin: 5px;
+    padding: 12px;
+  }
+
+  .blogTitleContainer {
+    font-size: 22px;
+  }
 }
 </style>

@@ -101,7 +101,7 @@ let option = {
       name: '标签',
       type: 'pie',
       radius: '55%',
-      center: ['50%', '50%'],
+      center: [window.innerWidth > 768 ? '50%' : '70%', '50%'],
       data: null,
       emphasis: {
         itemStyle: {
@@ -424,5 +424,36 @@ onMounted(async () => {
   justify-content: flex-start;
   align-items: center;
   width: 100%;
+}
+
+@media screen and (max-width: 768px) {
+  .allContainer {
+    margin: 0;
+    width: 100vw;
+  }
+
+  .chartContainer {
+    width: 90vw;
+    height: 50vh;
+  }
+
+  .blogCard {
+    width: 80vw;
+    padding: 20px;
+    margin: 20px 0;
+  }
+
+  .tagTitleContainer {
+    margin: 20px;
+    width: 90vw;
+  }
+
+  .tagsContainer {
+    width: 90vw;
+  }
+
+  .tagContainer {
+    margin: 10px 20px;
+  }
 }
 </style>

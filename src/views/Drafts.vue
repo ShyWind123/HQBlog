@@ -73,7 +73,7 @@ onMounted(() => {
 <style scoped>
 .allContainer {
   /* background-color: var(--primary-color); */
-  height: 800px;
+  min-height: 800px;
   overflow: auto;
   margin: 30px;
 }
@@ -115,5 +115,20 @@ onMounted(() => {
 
 .draftTagsContainer {
   display: flex;
+}
+
+@media screen and (max-width: 768px) {
+  .allContainer {
+    margin: 15px;
+  }
+
+  .allTitleContainer {
+    margin: 10px;
+  }
+
+  .draftCardContainer {
+    width: 80vw;
+    padding: 15px;
+  }
 }
 </style>

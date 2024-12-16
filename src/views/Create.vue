@@ -12,12 +12,38 @@
           <div class="titleContainer">
             <v-text-field v-model="blogStore.title" label="标题" placeholder="请输入标题" variant="outlined"
               density="comfortable"></v-text-field>
+            <!-- 移动端标签按钮 -->
+            <div class="mobileTagsContainer">
+              <v-menu :close-on-content-click="false">
+                <template v-slot:activator="{ props }">
+                  <v-btn v-bind="props" size="large" class="mobileShowTagsBtnContainer">
+                    <i class="iconfont icon-biaoqian"></i>
+                    标签
+                  </v-btn>
+                </template>
+                <div class="tagsContainer2 boxshadow">
+                  <div class="tagsTitleContainer">
+                    <div class="tagsTitle">
+                      标签
+                    </div>
+                    <div class="tagsOpContainer">
+                      <!-- <v-btn variant="text" class="tagsOpBtn" @click="generateTags()">一键生成(测试)</v-btn> -->
+                      <v-btn variant="text" class="tagsOpBtn" @click="showTagsAddDialog = true">添加标签</v-btn>
+                    </div>
+                  </div>
+                  <v-chip-group column>
+                    <v-chip v-for="(tag, index) in blogStore.getTags()" class="chip" :text="tag" closable
+                      @click:close="blogStore.deleteTag(index); chipsKey++;" :key="chipsKey"></v-chip>
+                  </v-chip-group>
+                </div>
+              </v-menu>
+            </div>
           </div>
           <div class="summaryContainer">
             <v-textarea v-model="blogStore.summary" label="概要" placeholder="请输入概要" variant="outlined" no-resize>
-              <template v-slot:append-inner>
+              <!-- <template v-slot:append-inner>
                 <i class="iconfont icon-yijianshengcheng generateSummaryBtn" @click="generateSummary()">一键生成</i>
-              </template>
+              </template> -->
             </v-textarea>
           </div>
         </div>
@@ -35,7 +61,7 @@
             标签
           </div>
           <div class="tagsOpContainer">
-            <v-btn variant="text" class="tagsOpBtn" @click="generateTags()">一键生成(测试)</v-btn>
+            <!-- <v-btn variant="text" class="tagsOpBtn" @click="generateTags()">一键生成(测试)</v-btn> -->
             <v-btn variant="text" class="tagsOpBtn" @click="showTagsAddDialog = true">添加标签</v-btn>
           </div>
         </div>
@@ -241,7 +267,7 @@ onMounted(async () => {
     "icon": "material",
     // "minHeight": 800,
     "height": window.innerHeight * 1.5,
-    "width": window.innerWidth * 0.75,
+    "width": window.innerWidth > 768 ? window.innerWidth * 0.75 : window.innerWidth * 0.95,
     "counter": {
       "enable": true
     },
@@ -319,12 +345,13 @@ window.onbeforeunload = () => {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin: 10px;
 }
 
 .titleContainer {
   width: 100%;
+  display: flex;
 }
 
 .summaryContainer {
@@ -355,6 +382,26 @@ window.onbeforeunload = () => {
   border-radius: 5px;
   padding: 10px;
   margin: 10px;
+}
+
+.tagsContainer2 {
+  width: 50vw;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  /* border: 2px solid #ccc; */
+  background-color: var(--light-background);
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px;
+}
+
+.mobileShowTagsBtnContainer {
+  display: none;
+  margin-left: 10px;
+  font-size: 18px;
 }
 
 .tagsTitleContainer {
@@ -406,5 +453,24 @@ window.onbeforeunload = () => {
 
 .optionBtn {
   margin-right: 20px;
+}
+
+@media screen and (max-width: 768px) {
+  .settingContainner {
+    flex-direction: column;
+    width: 90vw;
+  }
+
+  .infoContainer {
+    width: 95%;
+  }
+
+  .tagsContainer {
+    display: none;
+  }
+
+  .mobileShowTagsBtnContainer {
+    display: flex;
+  }
 }
 </style>

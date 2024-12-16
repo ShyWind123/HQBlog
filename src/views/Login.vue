@@ -529,4 +529,34 @@ button {
 i:hover {
   cursor: pointer;
 }
+
+@media screen and (max-width: 768px) {
+  .loginBox {
+    width: 90vw;
+    height: 55vh;
+  }
+
+  .loginType {
+    height: 8vh;
+  }
+
+  .inputContainer {
+    height: 47vh;
+  }
+
+  .inputBox {
+    width: 70vw;
+    height: 10vh;
+  }
+
+  .registerInputBox {
+    width: 70vw;
+    height: 8vh;
+  }
+
+  .btn {
+    width: 70vw;
+    margin-top: 0;
+  }
+}
 </style>

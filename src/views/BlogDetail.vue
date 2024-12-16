@@ -34,6 +34,18 @@
             </div> -->
           </div>
 
+          <!-- 移动端的标签 -->
+          <div class="userBlogTagsContainer2">
+            <v-responsive class="overflow-y-auto">
+              <v-chip-group column>
+                <v-chip v-for="tag in viewBlogStore.getTags()" class="chip" label
+                  style="color: var(--light-background);">
+                  <router-link :to="{ name: 'tags', query: { tag: tag } }">{{ tag }}</router-link>
+                </v-chip>
+              </v-chip-group>
+            </v-responsive>
+          </div>
+
           <div class="optionContainer" v-if="loginStore.isLogin">
             <div class="editBtn" v-if="userStore.getUid() === viewBlogStore.getUid()" @click="onEditBlog">编辑</div>
             <div class="deleteBtn" v-if="userStore.getUid() === viewBlogStore.getUid()" @click="onDeleteBlog">删除</div>
@@ -47,7 +59,7 @@
     </div>
 
     <div class="catagoryTagsContainer">
-      <div class="userBlogTagsContainer boxshadow">
+      <div class="userBlogTagsContainer1 boxshadow">
         <div class="userBlogTagsTitle">博客标签</div>
         <v-responsive class="overflow-y-auto">
           <v-chip-group class="mt-3" column>
@@ -382,12 +394,16 @@ onMounted(async () => {
   justify-content: center;
 }
 
-.userBlogTagsContainer {
+.userBlogTagsContainer1 {
   height: auto;
   background-color: var(--light-background);
   border-radius: 5px;
   margin: 25px 0;
   padding: 15px;
+}
+
+.userBlogTagsContainer2 {
+  display: none;
 }
 
 .userBlogTagsTitle {
@@ -399,5 +415,46 @@ onMounted(async () => {
 .chip {
   background-color: #333;
   color: #fff;
+}
+
+@media screen and (max-width: 768px) {
+  .blogDeatilContainer {
+    width: 100vw;
+  }
+
+  .catagoryTagsContainer {
+    display: none;
+  }
+
+  .blogDataContainer {
+    width: 90vw;
+  }
+
+  .blogInfo1Container {
+    margin-top: 20px;
+  }
+
+  .likeBtn {
+    display: none;
+  }
+
+  .infoopContainer {
+    flex-direction: column;
+  }
+
+  .blogContentContainer {
+    margin-top: 0;
+    padding: 5px 15px;
+  }
+
+  .userBlogTagsContainer2 {
+    display: flex;
+    flex-direction: column;
+    width: 90vw;
+    height: auto;
+    background-color: var(--light-background);
+    justify-content: center;
+    align-items: center;
+  }
 }
 </style>

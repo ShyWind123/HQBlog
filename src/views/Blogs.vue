@@ -16,7 +16,45 @@
   </v-snackbar>
   <loading v-if="isLoading"></loading>
   <div class="blogContainer">
-    <div class="allTitleContainer"><span class="allTitle">所有博客</span></div>
+    <div class="allTitleContainer">
+      <span class="allTitle">所有博客</span>
+      <div class="mobileBtnsContainer">
+        <!-- 移动端排行榜按钮 -->
+        <div class="mobileRankContainer">
+          <v-menu :close-on-content-click="false">
+            <template v-slot:activator="{ props }">
+              <v-btn v-bind="props" size="large" class="mobileRankBtnContainer">
+                推荐作者
+              </v-btn>
+            </template>
+            <div class="rankContainerMobile boxshadow">
+              <div class="rankTitle">推荐作者</div>
+              <div class="rank" v-for="rankInfo in ranksInfo">
+                <v-divider></v-divider>
+                <div class="rankUsername" @click="onUsernameClick(rankInfo.uid)">{{ rankInfo.username }}</div>
+                <div class="rankInfosContainer">
+                  <div class="countContainer">
+                    <div>{{ rankInfo.blogs }}</div>
+                    &nbsp;
+                    <i class="iconfont icon-boke" style="color:wheat;"></i>
+                  </div>
+                  <div class="watchContainer">
+                    <div>{{ rankInfo.views }}</div>
+                    &nbsp;
+                    <i class="iconfont icon-guankan" style="color:wheat;"></i>
+                  </div>
+                  <div class="likeContainer">
+                    <div>{{ rankInfo.likes }}</div>
+                    &nbsp;
+                    <i class="iconfont icon-xihuan" style="color:red;"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </v-menu>
+        </div>
+      </div>
+    </div>
     <div v-for="blog in blogs" class="blogCard boxshadow">
       <div class="blogTitleContainer" @click="onBlogTitleClick(blog.id)">
         <span class="blogTitle">{{ blog.title }}</span>
@@ -301,9 +339,9 @@ onMounted(async () => {
   width: 100%;
   /* height: 3vh; */
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   align-items: flex-start;
-  justify-content: center;
+  justify-content: space-between;
 }
 
 .allTitle {
@@ -311,6 +349,10 @@ onMounted(async () => {
   font-size: 30px;
   font-weight: bold;
   border-bottom: 4px solid var(--primary-color);
+}
+
+.mobileBtnsContainer {
+  display: none;
 }
 
 .blogCard {
@@ -395,6 +437,7 @@ onMounted(async () => {
   justify-content: flex-start;
   align-items: center;
   width: 100%;
+  white-space: nowrap;
 }
 
 .funContainer {
@@ -422,6 +465,19 @@ onMounted(async () => {
 
 .rankContainer {
   margin: 20px;
+  width: 100%;
+  /* height: 50vh; */
+  background-color: var(--dark-background);
+  color: var(--light-background);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.rankContainerMobile {
   width: 100%;
   /* height: 50vh; */
   background-color: var(--dark-background);
@@ -484,5 +540,60 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+@media screen and (max-width: 768px) {
+  .blogContainer {
+    width: 95vw;
+    padding: 10px;
+  }
+
+  .allTitleContainer {
+    margin: 15px;
+  }
+
+  .mobileBtnsContainer {
+    display: flex;
+    flex-direction: column;
+    margin: 0 10px;
+  }
+
+  .mobileHeatmapBtnContainer {
+    background-color: var(--dark-background);
+    color: var(--light-background);
+  }
+
+  .mobileHeatmapBtnContainer:active {
+    color: var(--primary-color);
+  }
+
+  .mobileRankBtnContainer {
+    background-color: var(--dark-background);
+    color: var(--light-background);
+  }
+
+  .mobileRankBtnContainer:active {
+    color: var(--primary-color);
+  }
+
+  .funContainer {
+    display: none;
+  }
+
+  .blogCard {
+    width: 85vw;
+    padding: 20px;
+    font-size: 16px;
+    min-height: 10vh;
+  }
+
+  .blogTitleContainer {
+    margin: 0;
+    font-size: 35px;
+  }
+
+  .blogInfo {
+    font-size: 10px;
+  }
 }
 </style>

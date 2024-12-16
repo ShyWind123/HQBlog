@@ -205,4 +205,47 @@ onMounted(() => {
   align-items: center;
   width: 100%;
 }
+
+@media screen and (max-width: 768px) {
+  .allContainer {
+    width: 90vw;
+  }
+
+  .searchResultContainer {
+    margin: 20px;
+  }
+
+  .searchBlogsContainer {
+    width: 80vw;
+  }
+
+  .blogCard {
+    width: 100%;
+    padding: 12px;
+    margin: 20px 0 10px 0;
+    font-size: 16px;
+    min-height: 20vh;
+  }
+
+  .blogTitleContainer {
+    font-size: 30px;
+    margin: 0 0 10px 0;
+  }
+
+  .blogInfo {
+    font-size: 10px;
+  }
+
+  .blogContent {
+    margin: 20px 0;
+  }
+
+  .blogTags {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    white-space: nowrap;
+  }
+}
 </style>

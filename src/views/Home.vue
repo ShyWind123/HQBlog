@@ -5,12 +5,35 @@
         <div class="top-left animate__animated animate__bounce">
           <router-link to="/HQBlog/home">
             <div class="logo-container">
-              <!-- <span class="logo-content" style="color: var(--primary-color);">HQ</span>
-              <span class="logo-content" style="color: var(--light-background);">Blog</span> -->
-              <span class="logo-content" style="color: var(--primary-color);">风软</span>
-              <span class="logo-content" style="color: var(--light-background);">阁</span>
+              <span class="logo-content" style="color: var(--primary-color);">HQ</span>
+              <span class="logo-content" style="color: var(--light-background);">Blog</span>
+              <!-- <span class="logo-content" style="color: var(--primary-color);">风软</span>
+              <span class="logo-content" style="color: var(--light-background);">阁</span> -->
             </div>
           </router-link>
+        </div>
+
+        <!-- 移动端搜索按钮 -->
+        <div class="mobileSearchBtnContainer" @click="clickSearchIcon" ref="searchBtn1">
+          <i class="iconfont icon-sousuo"></i>
+        </div>
+        <!-- 移动端的打开菜单按钮 -->
+        <div class="mobileMenuBtnContainer">
+          <div class="mobileMenuBtn">
+            <i class="iconfont icon-ego-menu"></i>
+          </div>
+          <v-menu activator="parent">
+            <v-list>
+              <v-list-item v-for="(link, index) in gotoLinks" :key="index" :value="index">
+                <router-link :to="getPath(link)" style="display: flex;">
+                  <div class="top-right-icon-container">
+                    <i class="iconfont top-right-icon" :class="link.icon"></i>
+                  </div>
+                  <span>{{ link.name }}</span>
+                </router-link>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </div>
 
         <div class="top-right">
@@ -23,7 +46,7 @@
             </router-link>
           </div>
 
-          <div class="top-right-item-container" @click="clickSearchIcon" ref="searchBtn">
+          <div class="top-right-item-container" @click="clickSearchIcon" ref="searchBtn2">
             <a>
               <div class="top-right-icon-container">
                 <i class="iconfont icon-sousuo top-right-icon"></i>
@@ -77,7 +100,8 @@ const { isLogin } = storeToRefs(loginStore)
 
 const userStore = useUserStore()
 
-const searchBtn = ref(0)
+const searchBtn1 = ref(0)
+const searchBtn2 = ref(0)
 const searchBox = ref(0)
 const searchBoxInput = ref(0)
 
@@ -136,7 +160,8 @@ const clickSearchIcon = () => {
 }
 const showSearchBox = () => {
   isSearchBoxShow.value = true
-  searchBtn.value.style.visibility = "hidden";
+  searchBtn1.value.style.visibility = "hidden";
+  searchBtn2.value.style.visibility = "hidden";
   nextTick(() => {
     searchBoxInput.value.focus()
   })
@@ -144,7 +169,8 @@ const showSearchBox = () => {
 const hideSearchBox = () => {
   isSearchBoxShow.value = false
   setTimeout(() => {
-    searchBtn.value.style.visibility = "visible";
+    searchBtn1.value.style.visibility = "visible";
+    searchBtn2.value.style.visibility = "visible";
   }, 400)
 }
 const onSearch = () => {
@@ -255,6 +281,15 @@ onMounted(() => {
   color: var(--primary-color);
 }
 
+.mobileSearchBtnContainer {
+  display: none;
+}
+
+.mobileSearchBtnContainer:hover {
+  cursor: pointer;
+  color: var(--primary-color);
+}
+
 .search-box-container {
   position: absolute;
   /* transform: translateY(-50%); */
@@ -322,5 +357,49 @@ onMounted(() => {
 .icpContainer:hover {
   cursor: pointer;
   color: var(--primary-color);
+}
+
+.mobileMenuBtnContainer {
+  display: none;
+}
+
+@media screen and (max-width: 768px) {
+  .layout-header {
+    height: 6vh;
+  }
+
+  .top-left {
+    left: 8vw;
+  }
+
+  .top-right {
+    display: none;
+  }
+
+  .mobileMenuBtnContainer {
+    display: flex;
+    right: 5vw;
+    position: absolute;
+  }
+
+  .mobileMenuBtn {
+    color: #fff;
+  }
+
+  .mobileSearchBtnContainer {
+    right: 10vw;
+    display: flex;
+    position: absolute;
+    color: #fff;
+  }
+
+  .search-box-container {
+    position: absolute;
+    /* transform: translateY(-50%); */
+    top: 5px;
+    right: 0;
+    width: 70vw;
+    height: 20px;
+  }
 }
 </style>

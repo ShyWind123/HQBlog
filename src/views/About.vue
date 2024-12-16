@@ -191,4 +191,54 @@ const otherWebs = [
   cursor: pointer;
   text-decoration: underline;
 }
+
+@media screen and (max-width: 768px) {
+  .blogContainer {
+    width: 90vw;
+  }
+
+  .aboutTitle {
+    font-size: 40px;
+    margin: 30px;
+  }
+
+  .allInfoContainer {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .basicInfoContainer {
+    margin: 0 30px;
+  }
+
+  .contactInfoContainer {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 30px 0 20px 15px;
+  }
+
+  .contactTitle {
+    margin: 0;
+  }
+
+  .otherWebsContainer {
+    margin: 20px 0;
+  }
+
+  .otherWebsTitle {
+    margin: 30px;
+  }
+
+  .otherWebs {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .otherWebItem {
+    margin: 5px 0;
+  }
+}
 </style>
