@@ -365,11 +365,11 @@ onMounted(() => {
 
 @media screen and (max-width: 768px) {
   .layout-header {
-    height: 6vh;
+    height: 8vh;
   }
 
   .top-left {
-    left: 8vw;
+    left: 6vw;
   }
 
   .top-right {
@@ -378,8 +378,9 @@ onMounted(() => {
 
   .mobileMenuBtnContainer {
     display: flex;
-    right: 5vw;
+    right: 7vw;
     position: absolute;
+    scale: 1.5;
   }
 
   .mobileMenuBtn {
@@ -387,10 +388,11 @@ onMounted(() => {
   }
 
   .mobileSearchBtnContainer {
-    right: 10vw;
+    right: 18vw;
     display: flex;
     position: absolute;
     color: #fff;
+    scale: 1.5;
   }
 
   .search-box-container {

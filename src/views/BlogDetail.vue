@@ -456,5 +456,9 @@ onMounted(async () => {
     justify-content: center;
     align-items: center;
   }
+
+  .blogBasicInfo {
+    font-size: 3.5vw;
+  }
 }
 </style>

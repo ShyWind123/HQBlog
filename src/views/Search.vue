@@ -247,5 +247,14 @@ onMounted(() => {
     width: 100%;
     white-space: nowrap;
   }
+
+  .blogSubInfo {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .blogDate {
+    margin-left: 5px;
+  }
 }
 </style>

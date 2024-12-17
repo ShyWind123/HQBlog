@@ -48,7 +48,8 @@
           </div>
         </div>
         <div class="optionContainer" :key="optionContainerKey">
-          <v-btn v-for="opBtn in opBtns" size="large" class="optionBtn" :color="opBtn.color" @click="opBtn.click">
+          <v-btn v-for="opBtn in opBtns" :size="buttonSize()" class="optionBtn" :color="opBtn.color"
+            @click="opBtn.click">
             <i class="iconfont" :class="opBtn.icon"></i>
             {{ opBtn.name }}
           </v-btn>
@@ -219,6 +220,10 @@ const clickDelete = async () => {
 
   router.push({ name: "home" })
 }
+
+const buttonSize = (() => {
+  return window.innerWidth > 768 ? 'large' : 'default';
+})
 
 let opBtns = [
   {

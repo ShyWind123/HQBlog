@@ -595,5 +595,14 @@ onMounted(async () => {
   .blogInfo {
     font-size: 10px;
   }
+
+  .blogSubInfo {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .blogDate {
+    margin-left: 5px;
+  }
 }
 </style>

@@ -101,7 +101,7 @@ let option = {
       name: '标签',
       type: 'pie',
       radius: '55%',
-      center: [window.innerWidth > 768 ? '50%' : '70%', '50%'],
+      center: ['50%', '50%'],
       data: null,
       emphasis: {
         itemStyle: {
@@ -113,6 +113,36 @@ let option = {
     }
   ]
 };
+
+if (window.innerWidth < 768) {
+  option = {
+    title: {
+      text: '标签统计',
+      // subtext: '纯属虚构',
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'item',
+      formatter: '{a} : {b} <br/>{c} ({d}%)'
+    },
+    series: [
+      {
+        name: '标签',
+        type: 'pie',
+        radius: '55%',
+        center: ['50%', '50%'],
+        data: null,
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)'
+          }
+        }
+      }
+    ]
+  }
+}
 
 
 const onBlogTitleClick = (blogId) => {
@@ -424,6 +454,7 @@ onMounted(async () => {
   justify-content: flex-start;
   align-items: center;
   width: 100%;
+  white-space: nowrap;
 }
 
 @media screen and (max-width: 768px) {
@@ -454,6 +485,15 @@ onMounted(async () => {
 
   .tagContainer {
     margin: 10px 20px;
+  }
+
+  .blogSubInfo {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .blogDate {
+    margin-left: 5px;
   }
 }
 </style>

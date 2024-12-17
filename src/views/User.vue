@@ -867,6 +867,7 @@ onMounted(async () => {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 3.5vw;
   }
 
   .userOtherInfo {
@@ -888,7 +889,7 @@ onMounted(async () => {
   .userBlogHeatmapContainer {
     width: 95vw;
     padding: 10px;
-
+    padding-left: 0;
   }
 
   .userBlogHeatmap {
@@ -900,7 +901,7 @@ onMounted(async () => {
   }
 
   .heatmapContainer {
-    height: 22vh;
+    height: 30vh;
     width: 200vw;
   }
 
@@ -909,13 +910,15 @@ onMounted(async () => {
   }
 
   .userBlogTagsContainer {
-    width: 90vw;
+    width: 92.5vw;
     margin: 10px;
     padding: 10px;
+    margin-left: 0;
   }
 
   .userBlogListContainer {
     padding: 10px;
+    padding-left: 0;
     width: 95vw;
   }
 

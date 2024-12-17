@@ -533,15 +533,16 @@ i:hover {
 @media screen and (max-width: 768px) {
   .loginBox {
     width: 90vw;
-    height: 55vh;
+    height: 60vh;
   }
 
   .loginType {
     height: 8vh;
+    font-size: 14px;
   }
 
   .inputContainer {
-    height: 47vh;
+    height: 52vh;
   }
 
   .inputBox {
