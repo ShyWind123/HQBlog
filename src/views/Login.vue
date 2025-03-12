@@ -1,7 +1,7 @@
 <template>
   <v-snackbar v-model="showSnackBar" :timeout="2000" location="top" color="red-accent-4">
     <div style="justify-content: center; display: flex; align-items: center;">
-      请先登录
+      {{ snackbarText }}
     </div>
   </v-snackbar>
   <div class="login-container">
@@ -110,12 +110,15 @@ import { useRouter } from 'vue-router';
 import { useLoginStore } from '@/store/LoginStore'
 import { useRuleStore } from '@/store/RuleStore'
 import { useUserStore } from '@/store/UserStore'
+import { useSnackBarStore } from '@/store/SnackBarStore'
+
 const loginStore = useLoginStore()
 const ruleStore = useRuleStore()
 const userStore = useUserStore()
 const router = useRouter();
 const form = [ref(false), ref(false), ref(false)]
 const showSnackBar = ref(false)
+const snackbarText = ref("请先登录")
 const showDialog = ref(false)
 const loading = ref(false)
 const loginType = ref(0)
@@ -179,6 +182,7 @@ const loginByPassword = () => {
     method: 'post',
     maxBodyLength: Infinity,
     url: 'http://8.134.215.31:2002/login/password',
+    // url: 'http://localhost:2002/login/password',
     headers: {
       'Content-Type': 'application/json'
     },
@@ -188,7 +192,12 @@ const loginByPassword = () => {
     }
   })
     .then((response) => {
-      afterLogin(response.data.data)
+      if (response.data.code === 0) {
+        snackbarText.value = response.data.msg;
+        showSnackBar.value = true;
+      } else {
+        afterLogin(response.data.data)
+      }
     })
     .catch((error) => {
       console.log(error);
@@ -292,6 +301,7 @@ const afterLogin = (resData) => {
   userStore.setUid(resData.uid)
   loginStore.login();
   loginStore.setIsNowLogin(true)
+  loginStore.setIsNowLogout(false)
   router.push('/HQBlog/home')
 }
 

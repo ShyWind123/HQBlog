@@ -1,10 +1,10 @@
 <template>
-  <v-snackbar v-model="isNowLogin" :timeout="2000" location="top" color="green-accent-4">
+  <v-snackbar v-model="loginStore.isNowLogin" :timeout="2000" location="top" color="green-accent-4">
     <div style="justify-content: center; display: flex; align-items: center; color:aliceblue; font-size: 16px;">
       登录成功！
     </div>
   </v-snackbar>
-  <v-snackbar v-model="isNowLogout" :timeout="2000" location="top" color="green-accent-4">
+  <v-snackbar v-model="loginStore.isNowLogout" :timeout="2000" location="top" color="green-accent-4">
     <div style="justify-content: center; display: flex; align-items: center; color:aliceblue; font-size: 16px;">
       已退出登录！
     </div>
@@ -136,8 +136,6 @@ const router = useRouter()
 const loginStore = useLoginStore()
 const userStore = useUserStore()
 const snackBarStore = useSnackBarStore()
-
-const { isNowLogin, isNowLogout } = storeToRefs(loginStore)
 
 const heatmapRef = ref()
 const isLoading = ref(true)
@@ -452,7 +450,7 @@ onMounted(async () => {
 .heatmapContainer {
   width: 20vw;
   /* height: 40vh; */
-  height: 250px;
+  height: 300px;
   margin: 20px;
   border-radius: 5px;
   background-color: var(--dark-background);
