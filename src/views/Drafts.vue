@@ -18,7 +18,7 @@
       <v-container>
         <v-row>
           <v-col v-for="draft in drafts" :key="draft.id" cols="4" sm="1">
-            <v-card class="draftCardContainer" height="300">
+            <v-card class="draftCardContainer" height="300" width="300">
               <div class="draftTitleContainer" @click="onClickDraftTitle(draft.id)">{{ draft.title }}</div>
               <div class="draftSummaryContainer">{{ draft.summary }}</div>
               <div class="draftTagsContainer">

@@ -308,6 +308,12 @@ onMounted(async () => {
     snackBarStore.setShow(false);
   }
 
+  if (localStorage.getItem('JWT_TOKEN') != null) {
+    loginStore.login();
+  } else {
+    loginStore.logout();
+  }
+
   await getAllBlogs()
   await getRanks()
   if (loginStore.getIsLogin()) {
